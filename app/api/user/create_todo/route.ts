@@ -1,15 +1,14 @@
 import { connectUserDB } from "@/lib/mongodb";
-import User from "@/models/user";
+import Todo from "@/models/todo";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const { email, name } = await req.json();
+    const todoData = await req.json();
     await connectUserDB();
-    const user = await User.create({ name, email});
-    
+    const todo = await Todo.db.collection(todoData.id).insertMany(todoData);
+
     return NextResponse.json({
-        message: "User Registered!",
-        id: user?._id,
-        data: { email, name }
+        message: "Task created!",
+        todo
     }, { status: 201 });
 }
