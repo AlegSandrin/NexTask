@@ -6,6 +6,7 @@ import Image from "next/image";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { TbLogout2 } from "react-icons/tb";
 import NexTaskLogo from "../public/NexTask-logo.png";
+import { CircularProgress } from "@mui/material";
 
 export const Navbar = () => {
 
@@ -42,12 +43,13 @@ export const Navbar = () => {
                     </span>
                 ) :
                 status === 'loading' ? (
-                    <AiOutlineLoading3Quarters className="animate-spin text-xl text-app-palette-500"/>
+                    // <AiOutlineLoading3Quarters className="animate-spin text-xl text-app-palette-500"/>
+                    <CircularProgress style={{ color: "rgb(227 208 129)" }}/>
                 ) : 
                 (
                     <button 
                     onClick={() => signIn()}
-                    className="bg-app-palette-300 text-app-palette-100 font-medium px-6 py-2 rounded-md"
+                    className="bg-app-palette-300 text-white font-medium px-6 py-2 rounded-md"
                     >Conectar
                     </button>
                 )

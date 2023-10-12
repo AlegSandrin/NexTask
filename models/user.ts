@@ -1,4 +1,5 @@
-import mongoose, { Schema, models } from "mongoose";
+import { connectAuthDB } from "@/lib/mongodb";
+import { Schema } from "mongoose";
 
 // Schema para coleção de autenticação dos usuários "users_auth"
 const userSchema = new Schema(
@@ -12,9 +13,9 @@ const userSchema = new Schema(
             required: true
         },
     },
-    { timestamps: true }
+    { timestamps: true, _id: true, collection: "users" }
 );
 
-const User = models.User || mongoose.model("User", userSchema);
+const User = connectAuthDB().model("User", userSchema);
 
 export default User;

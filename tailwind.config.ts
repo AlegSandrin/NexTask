@@ -9,11 +9,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      },
       colors: {
         'app-palette': {
           100: '#54494B',
@@ -22,6 +17,31 @@ const config: Config = {
           400: '#B33951',
           500: '#E3D081'
         }
+      },
+      screens: {
+        '-2xl': { max: '1600px'},
+        // => @media (max-width: 1600px) { ... }
+        '-xl': { max: '1400px'},
+        // => @media (max-width: 1400px) { ... }
+        '-lg': { max: '1023px'},
+        // => @media (max-width: 1023px) { ... }
+        '-md': { max: '767px'},
+        // => @media (max-width: 767px) { ... }
+        '-sm': { max: '639px'},
+        // => @media (max-width: 639px) { ... }
+        '-xs': { max: '480px'},
+        // => @media (max-width: 480px) { ... }
+      },
+      keyframes: {
+        glow: {
+          '50%': {
+            transform: 'scale(1.1)',
+            filter: 'brightness(1.5)',
+          }
+        }
+      },
+      animation: {
+        glow: 'glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
       }
     },
   },
