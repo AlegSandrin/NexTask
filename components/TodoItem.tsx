@@ -11,6 +11,7 @@ import { useAlertController, useDialogController } from "@/hooks/states";
 import { useGetTodos } from "@/hooks/apiRequest";
 import CustomButton from "./CustomButton";
 import { useSession } from "next-auth/react";
+import { dateFormatter } from "@/lib/date";
 
 export type ITodoItem = {
     todo: ITodo;
@@ -35,6 +36,7 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
             title: "Tudo certo.",
             message: "Tarefa excluída com sucesso!"
           })
+          setDialogProps(null);
         })
         .catch((error) => {
           setAlertProps({
@@ -159,6 +161,18 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
                     value={todo.description}
                     multiline
                     />
+                    <span className="flex flex-col leading-3">
+                        <label className="text-xs italic opacity-60 mt-1 leading-3">
+                            Data de criação: <strong>{dateFormatter(new Date(todo.createdAt))}</strong>
+                        </label>
+                        {
+                            todo.createdAt !== todo.updatedAt &&
+                            <label className="text-xs italic opacity-60 mt-1 leading-3">
+                                Última modificação: <strong>{dateFormatter(new Date(todo.updatedAt))}</strong>
+                            </label>
+                        }
+                        <label className="text-xs italic opacity-60 mt-1 leading-3">ID da tarefa: {todo._id}</label>
+                    </span>
                 </List>
             </Collapse>
 

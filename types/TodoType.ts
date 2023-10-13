@@ -7,4 +7,6 @@ export type ITodo = {
     priority: string;
     progress: number;
     completed: boolean;
+    createdAt: string;
+    updatedAt: string;
 }

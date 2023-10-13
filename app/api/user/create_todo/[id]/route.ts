@@ -1,9 +1,6 @@
 import { createTodoController } from "@/app/api/apiUtils/controllers/create_todo";
-import { userValidationController } from "@/app/api/apiUtils/controllers/user_validation";
-import { connectAuthDB, connectUserDB } from "@/lib/mongodb";
+import { connectUserDB } from "@/lib/mongodb";
 import Todo from "@/models/todo";
-import User from "@/models/user";
-import { isObjectIdOrHexString } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {

@@ -1,4 +1,3 @@
-import { connectAuthDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import { createAuthController } from "../../apiUtils/controllers/create_auth";

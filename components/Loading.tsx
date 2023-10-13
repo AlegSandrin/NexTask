@@ -6,11 +6,12 @@ export const Loading = () => {
     return <>
     <div className='container'>
 
-        <Image src={Logo} 
-        alt="Logo NexTask" 
-        className="w-[80%] h-auto animate-glow_saturate self-center pt-10
-        top-0 bottom-0 left-0 right-0 m-auto"
-        />
+        <div className="w-full h-full flex items-center justify-center self-center absolute -top-28 bottom-0 left-0 right-0 m-auto">
+            <Image src={Logo} 
+            alt="Logo NexTask" 
+            className="-md:w-[80%] md:w-[500px] h-auto animate-glow_saturate self-center"
+            />
+        </div>
 
         <div className='loader'>
             <div className='loader--dot'></div>

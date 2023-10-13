@@ -24,7 +24,6 @@ export const AddTodoForm = () => {
     const userData: any = session?.user;
     const userID = userData?.id;
     const { setAlertProps } = useAlertController();
-    const { setDialogProps } = useDialogController();
     const { refetch } = useGetTodos();
 
     function onSubmit(data: ITodo) {
@@ -37,7 +36,6 @@ export const AddTodoForm = () => {
                 title: "Tudo certo.",
                 message: "Tarefa registrada com sucesso!"
             });
-            setDialogProps(null);
         })
         .catch((error) => {
             console.error(error);
@@ -52,7 +50,7 @@ export const AddTodoForm = () => {
     return (
         <div className="flex flex-col w-full h-full gap-2 p-2 border border-app-palette-100 border-opacity-30 rounded-xl">
 
-            <h1 className="text-[1.4rem] font-semibold self-center">Ainda há muito o que fazer! 💪</h1>
+            <h1 className="text-[1.4rem] font-semibold self-center my-1">Ainda há muito o que fazer! 💪</h1>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col p-1 gap-2">
@@ -146,7 +144,7 @@ export const AddTodoForm = () => {
                     control={control}
                     render={({ field }) =>
                         <div className="flex flex-col my-2">
-                            <label className="font-italic text-sm leading-4">Já teve algum progresso na tarefa? Coloque aqui quanto:</label>
+                            <label className="italic text-sm leading-4">Já teve algum progresso na tarefa? Coloque aqui quanto:</label>
                             <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">
                                 <label>Progresso:</label>
                                 <Slider 
@@ -179,7 +177,7 @@ export const AddTodoForm = () => {
 
                     <CustomButton
                     Text="Enviar tarefa"
-                    onClick={() => setDialogProps(null)}
+                    type="submit"
                     className="bg-app-palette-300 text-app-palette-100 font-semibold"
                     Icon={BsFillSendPlusFill}
                     IconStyle="text-2xl text-app-palette-100"

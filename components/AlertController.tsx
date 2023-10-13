@@ -15,16 +15,16 @@ export const AlertController = () => {
         if(props !== null){
             setTimeout(() => {
                 setAlertProps(null);
-            },3000);
+            },2000);
         }
     },[props]);
 
     if(props === null) return <></>
 
         return <>
-        <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", zIndex: 50}}>
+        <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", zIndex: 50, opacity: 0.95}}>
             <Collapse in={props !== null}>
-                <Alert severity={severity} variant="standard">
+                <Alert severity={severity} variant="standard" sx={{ border:"1px solid", borderColor : "rgba(84, 73, 75, 0.6)", borderRadius: "20px" }}>
                     <AlertTitle>{title}</AlertTitle>
                     {message}
                 </Alert>

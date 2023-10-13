@@ -5,14 +5,17 @@
 }
 
 .loader {
-  height: 20px;
-  width: 250px;
+  height: 22px;
+  width: 252px;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   margin: auto;
+  background-color: rgba(246, 247, 237, 0.5);
+  border: 1px solid rgba(176, 176, 169, 0.9);
+  border-radius: 20px;
 }
 .loader--dot {
   animation-name: loader;
@@ -56,10 +59,12 @@
   animation-delay: 0s;
 }
 .loader--text {
+  font-family: 'Arimo', sans-serif;
+  font-size: 1.3rem;
   position: absolute;
   top: 200%;
   left: 0;
-  right: 0;
+  right: 40px;
   width: 4rem;
   margin: auto;
 }

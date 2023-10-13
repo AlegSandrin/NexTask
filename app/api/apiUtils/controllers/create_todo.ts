@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { userValidationController } from "./user_validation";
 import { ITodo } from "@/types/TodoType";
 
