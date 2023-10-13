@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    src: url(fonts/Arimo-VariableFont.ttf);
+    font-family: 'Arimo', sans-serif;
+}

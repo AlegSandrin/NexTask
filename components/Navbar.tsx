@@ -1,9 +1,8 @@
 'use client';
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { TbLogout2 } from "react-icons/tb";
 import NexTaskLogo from "../public/NexTask-logo.png";
 import { CircularProgress } from "@mui/material";
@@ -12,6 +11,8 @@ export const Navbar = () => {
 
     const { status, data: session } = useSession();
     const userImage = session?.user?.image;
+
+    if(status !== "authenticated" ) return <></>;
 
     return (
         <nav className="p-2 max-h-24 flex justify-between items-center shadow-md bg-app-palette-100 text-app-palette-200">
@@ -45,14 +46,8 @@ export const Navbar = () => {
                 status === 'loading' ? (
                     // <AiOutlineLoading3Quarters className="animate-spin text-xl text-app-palette-500"/>
                     <CircularProgress style={{ color: "rgb(227 208 129)" }}/>
-                ) : 
-                (
-                    <button 
-                    onClick={() => signIn()}
-                    className="bg-app-palette-300 text-white font-medium px-6 py-2 rounded-md"
-                    >Conectar
-                    </button>
-                )
+                ) 
+                : <></> 
             }
         </nav>
     )

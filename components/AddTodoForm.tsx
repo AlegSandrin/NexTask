@@ -1,9 +1,12 @@
-import { useAlertController } from "@/hooks/states";
+import { useGetTodos } from "@/hooks/apiRequest";
+import { useAlertController, useDialogController } from "@/hooks/states";
 import api from "@/services/api";
 import { ITodo } from "@/types/TodoType";
 import { Autocomplete, Button, Chip, InputLabel, MenuItem, Select, Slider, Stack, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form"
+import CustomButton from "./CustomButton";
+import { BsFillSendPlusFill } from "react-icons/bs";
 
 export const AddTodoForm = () => {
 
@@ -21,31 +24,36 @@ export const AddTodoForm = () => {
     const userData: any = session?.user;
     const userID = userData?.id;
     const { setAlertProps } = useAlertController();
+    const { setDialogProps } = useDialogController();
+    const { refetch } = useGetTodos();
 
     function onSubmit(data: ITodo) {
         api.post(`/user/create_todo/${userID}`, data)
         .then(() => {
             reset();
+            refetch();
             setAlertProps({
-                open: true,
                 severity: "success",
                 title: "Tudo certo.",
                 message: "Tarefa registrada com sucesso!"
-            })
+            });
+            setDialogProps(null);
         })
         .catch((error) => {
             console.error(error);
             setAlertProps({
-                open: true,
                 severity: "error",
                 title: "Algo deu errado...",
                 message: "Erro ao cadastrar tarefa. Tente novamente."
-            })
+            });
         })
     }
 
     return (
-        <div>
+        <div className="flex flex-col w-full h-full gap-2 p-2 border border-app-palette-100 border-opacity-30 rounded-xl">
+
+            <h1 className="text-[1.4rem] font-semibold self-center">Ainda há muito o que fazer! 💪</h1>
+
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col p-1 gap-2">
                     <Controller
@@ -137,29 +145,45 @@ export const AddTodoForm = () => {
                     name="progress"
                     control={control}
                     render={({ field }) =>
-                        <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-                            <label>Progresso:</label>
-                            <Slider 
-                            {...field}
-                            onChange={(e: any) => {
-                                if(e.target.value === 100){
-                                    setValue("completed", true);
-                                } else {
-                                    setValue("completed", false);
-                                }
-                                field.onChange(e.target.value)
-                            }}
-                            defaultValue={0} 
-                            aria-label="Default" 
-                            valueLabelDisplay="auto"
-                            />
-                        </Stack>
+                        <div className="flex flex-col my-2">
+                            <label className="font-italic text-sm leading-4">Já teve algum progresso na tarefa? Coloque aqui quanto:</label>
+                            <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">
+                                <label>Progresso:</label>
+                                <Slider 
+                                {...field}
+                                onChange={(e: any) => {
+                                    if(e.target.value === 100){
+                                        setValue("completed", true);
+                                    } else {
+                                        setValue("completed", false);
+                                    }
+                                    field.onChange(e.target.value)
+                                }}
+                                defaultValue={0} 
+                                step={5}
+                                marks={[
+                                    { value: 0, label: "0%" },
+                                    { value: 25, label: "25%" },
+                                    { value: 50, label: "50%" },
+                                    { value: 75, label: "75%" },
+                                    { value: 100, label: "100%" }
+                                ]}
+                                aria-label="Default" 
+                                valueLabelDisplay="auto"
+                                color="warning"
+                                />
+                            </Stack>
+                        </div>
                     }
                     />
 
-                    <Button variant="outlined" color="secondary" type="submit">
-                    Adicionar tarefa
-                    </Button>
+                    <CustomButton
+                    Text="Enviar tarefa"
+                    onClick={() => setDialogProps(null)}
+                    className="bg-app-palette-300 text-app-palette-100 font-semibold"
+                    Icon={BsFillSendPlusFill}
+                    IconStyle="text-2xl text-app-palette-100"
+                    />
                 </div>
             </form>
         </div>

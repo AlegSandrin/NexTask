@@ -20,8 +20,8 @@ const authOptions: AuthOptions = {
             if (account?.provider === "google") {
                 try {
                     // Conecta ao MongoDB e faz uma busca verificando se existe um usuário com esse email
-                    await connectAuthDB();
-                    const userExists = await User.findOne({email});
+                    const userExists = await User.findOne({email}).exec();
+                    await connectAuthDB().close();
 
                     if(!userExists) {
                         const response = await api.post("/user/create_auth", { email, name});
@@ -41,14 +41,14 @@ const authOptions: AuthOptions = {
         async session({session}) {
 
             const email = session.user?.email;
-            await connectAuthDB();
-            const userID = await User.findOne({email});
+            const user = await User.findOne({email}).exec();
+            await connectAuthDB().close();
             
             return {
                 ...session,
                 user: {
                     ...session.user,
-                    id: userID?._id
+                    id: user?._id
                 }
             };
         }

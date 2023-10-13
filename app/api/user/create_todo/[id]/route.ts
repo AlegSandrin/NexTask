@@ -1,3 +1,5 @@
+import { createTodoController } from "@/app/api/apiUtils/controllers/create_todo";
+import { userValidationController } from "@/app/api/apiUtils/controllers/user_validation";
 import { connectAuthDB, connectUserDB } from "@/lib/mongodb";
 import Todo from "@/models/todo";
 import User from "@/models/user";
@@ -8,32 +10,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const todoData = await req.json();
     const collectionID = params.id;
 
-    if(!isObjectIdOrHexString(collectionID)){
-        return NextResponse.json({
-            message: "Error: Invalid user ID."
-        }, { status: 404 });
-    }
-
-    const userExist = await User.findOne({ _id: collectionID }).exec();
-    await connectAuthDB().close();
-
-    if(!userExist){
-        return NextResponse.json({
-            message: "Error: User not found."
-        }, { status: 404 });
-    }
-
-    if(!todoData){
-        return NextResponse.json({
-            message: "TError: ask data is required."
-        }, { status: 400 });
-    }
-
-    if(!collectionID){
-        return NextResponse.json({
-            message: "Error: User ID is required."
-        }, { status: 400 });
-    }
+    const todoValidation = await createTodoController(todoData, collectionID);
+    if(todoValidation) return todoValidation;
     
     const todoRes = await Todo(collectionID).insertMany(todoData);
     await connectUserDB().close();

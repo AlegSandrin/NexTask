@@ -2,10 +2,11 @@
 
 import { Loading } from "@/components/Loading";
 import { SignInButton } from "@/components/SignInButton"
-import { Button } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Image from "next/image";
+import Banner from "../../public/NexTask-banner.png";
 
 const Login = () => {
 
@@ -19,12 +20,15 @@ const Login = () => {
     }
     return () => {};
   },[session])  
+
   if (status === 'loading') return <Loading/> 
+  
   if(!session)
   return (
-    <div>
+    <main className="flex flex-col justify-center items-center">
+      <Image src={Banner} alt="Banner NexTask" className="object-cover"/>
       <SignInButton/>
-    </div>
+    </main>
   )
 }
 

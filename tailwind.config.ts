@@ -38,10 +38,24 @@ const config: Config = {
             transform: 'scale(1.1)',
             filter: 'brightness(1.5)',
           }
+        },
+        glow_saturate: {
+          '50%': {
+            transform: 'scale(1.04)',
+            filter: 'brightness(1.2)',
+          }
+        },
+        saturate: {
+          '50%': {
+            filter: 'brightness(1.5)',
+            transform: 'scale(1.1)',
+          }
         }
       },
       animation: {
-        glow: 'glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        glow: 'glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        glow_saturate: 'glow_saturate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        saturate: 'saturate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
       }
     },
   },

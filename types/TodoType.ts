@@ -1,4 +1,6 @@
 export type ITodo = {
+    _id?: string;
+    id?: string;
     title: string;
     description: string;
     category: string;

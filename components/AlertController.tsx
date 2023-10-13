@@ -21,14 +21,14 @@ export const AlertController = () => {
 
     if(props === null) return <></>
 
-    return <>
-    <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", opacity: 0.8 }}>
-        <Collapse in={props !== null}>
-            <Alert severity={severity}>
-                <AlertTitle>{title}</AlertTitle>
-                {message}
-            </Alert>
-        </Collapse>
-    </Box>
+        return <>
+        <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", zIndex: 50}}>
+            <Collapse in={props !== null}>
+                <Alert severity={severity} variant="standard">
+                    <AlertTitle>{title}</AlertTitle>
+                    {message}
+                </Alert>
+            </Collapse>
+        </Box>
     </>
 }
