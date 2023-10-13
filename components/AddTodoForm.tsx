@@ -6,12 +6,12 @@ import { Autocomplete, Button, Chip, InputLabel, MenuItem, Select, Slider, Stack
 import { useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form"
 import CustomButton from "./CustomButton";
-import { BsFillSendPlusFill } from "react-icons/bs";
+import { BsFillSendPlusFill, BsSendCheckFill } from "react-icons/bs";
 
-export const AddTodoForm = () => {
+export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
 
     const { control, setValue, handleSubmit, reset } = useForm<ITodo>({
-        defaultValues: {
+        defaultValues: editValues ? editValues : {
             title: "",
             description: "",
             category: "",
@@ -24,35 +24,41 @@ export const AddTodoForm = () => {
     const userData: any = session?.user;
     const userID = userData?.id;
     const { setAlertProps } = useAlertController();
+    const { setDialogProps } = useDialogController();
     const { refetch } = useGetTodos();
 
-    function onSubmit(data: ITodo) {
-        api.post(`/user/create_todo/${userID}`, data)
+    function submitTodo(data: ITodo){
+        const route = editValues ? "update_todo" : "create_todo";
+        const messages = editValues ? ["atualizada, atualizar"] : ["registrada, registrar"];
+        (editValues ? api.patch : api.post)(`/user/${route}/${userID}`, data)
         .then(() => {
             reset();
             refetch();
             setAlertProps({
                 severity: "success",
                 title: "Tudo certo.",
-                message: "Tarefa registrada com sucesso!"
+                message: `Tarefa ${messages[0]} com sucesso!`
             });
+            setDialogProps(null);
         })
         .catch((error) => {
             console.error(error);
             setAlertProps({
                 severity: "error",
                 title: "Algo deu errado...",
-                message: "Erro ao cadastrar tarefa. Tente novamente."
+                message: `Erro ao ${messages[1]} tarefa. Tente novamente.`
             });
         })
     }
 
     return (
-        <div className="flex flex-col w-full h-full gap-2 p-2 border border-app-palette-100 border-opacity-30 rounded-xl">
+        <div className={`flex flex-col w-full h-full gap-2 p-2 border border-app-palette-100 border-opacity-30 ${!editValues ? "rounded-xl" : ""}`}>
 
-            <h1 className="text-[1.4rem] font-semibold self-center my-1">Ainda há muito o que fazer! 💪</h1>
+            <h1 className={`${editValues ? "text-[1.8rem]" : "text-[1.4rem]" } font-semibold flex items-center text-center self-center my-1`}>
+                {editValues ? "Registre suas melhorias 🦾" : "Ainda há muito o que fazer! 💪"}
+            </h1>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(submitTodo)}>
                 <div className="flex flex-col p-1 gap-2">
                     <Controller
                     name="title"
@@ -84,8 +90,10 @@ export const AddTodoForm = () => {
                     <Controller
                     name="category"
                     control={control}
+                    defaultValue={editValues ? editValues.category : ""}
                     render={({ field }) =>
                         <Autocomplete
+                        defaultValue={editValues ? editValues.category : null}
                         disablePortal
                         id="category"
                         options={["Educação", "Trabalho", "Lazer", "Outros"]}
@@ -176,10 +184,10 @@ export const AddTodoForm = () => {
                     />
 
                     <CustomButton
-                    Text="Enviar tarefa"
+                    Text={`${editValues ? "Atualizar tarefa" : "Enviar tarefa"}`}
                     type="submit"
                     className="bg-app-palette-300 text-app-palette-100 font-semibold"
-                    Icon={BsFillSendPlusFill}
+                    Icon={editValues ? BsSendCheckFill : BsFillSendPlusFill}
                     IconStyle="text-2xl text-app-palette-100"
                     />
                 </div>

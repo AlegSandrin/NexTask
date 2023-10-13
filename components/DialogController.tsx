@@ -12,6 +12,7 @@ export const DialogController = () => {
     const content = props?.content;
     const contentText = props?.contentText;
     const actions = props?.actions;
+    const styles = props?.styles;
 
     if(props === null) return <></>
 
@@ -19,19 +20,19 @@ export const DialogController = () => {
         <Dialog
         open={props !== null}
         onClose={() => setDialogProps(null)}
-        sx={{ opacity: 0.95, zIndex: 40 }}
+        sx={{ opacity: 0.95, zIndex: 40, ...styles?.dialog }}
         className="rounded-xl"
         >
-            <DialogTitle>
+            <DialogTitle sx={ styles?.title && styles?.title }>
                 {title}
             </DialogTitle>
-            <DialogContent>
-                <DialogContentText>
+            <DialogContent sx={ styles?.content && styles?.content }>
+                <DialogContentText sx={ styles?.contentText && styles?.contentText }>
                     {contentText}
                 </DialogContentText>
                 {content}
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={ styles?.actions && styles?.actions }>
                 <CustomButton
                 Text="Cancelar"
                 onClick={() => setDialogProps(null)}

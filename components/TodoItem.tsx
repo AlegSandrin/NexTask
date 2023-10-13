@@ -12,6 +12,7 @@ import { useGetTodos } from "@/hooks/apiRequest";
 import CustomButton from "./CustomButton";
 import { useSession } from "next-auth/react";
 import { dateFormatter } from "@/lib/date";
+import { AddTodoForm } from "./AddTodoForm";
 
 export type ITodoItem = {
     todo: ITodo;
@@ -27,26 +28,60 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
     const userData: any = session?.user;
     const userID = userData.id;
 
-    function deleteTodo(todoID: string) {
-        api.post(`/user/delete_todo/${userID}`, {id: todoID})
-        .then(() => {
-          refetch();
-          setAlertProps({
-            severity: "success",
-            title: "Tudo certo.",
-            message: "Tarefa excluída com sucesso!"
-          })
-          setDialogProps(null);
+    function handleDeleteTodo(todoID: string) {
+      api.post(`/user/delete_todo/${userID}`, {id: todoID})
+      .then(() => {
+        refetch();
+        setAlertProps({
+          severity: "success",
+          title: "Tudo certo.",
+          message: "Tarefa excluída com sucesso!"
         })
-        .catch((error) => {
-          setAlertProps({
-            severity: "error",
-            title: "Algo deu errado...",
-            message: "Erro ao excluir tarefa. Tente novamente."
-          })
-          console.error(error);
+        setDialogProps(null);
+      })
+      .catch((error) => {
+        setAlertProps({
+          severity: "error",
+          title: "Algo deu errado...",
+          message: "Erro ao excluir tarefa. Tente novamente."
         })
-      }
+        console.error(error);
+      })
+    }
+
+    function deleteTodo() {
+        setDialogProps({
+            title: "Excluir Tarefa",
+            contentText: "Tem certeza que deseja excluir esta tarefa?",
+            styles: {
+                title: { backgroundColor: "#B33951", color: "#F1F7ED" },
+                contentText: { fontWeight: "semibold", paddingTop: '10px' }
+            },
+            actions: (
+                <CustomButton
+                onClick={() => handleDeleteTodo(todo._id!)}
+                Text="Excluir"
+                className="bg-app-palette-400 text-app-palette-200 font-semibold"
+                Icon={AiFillDelete}
+                IconStyle="text-2xl text-app-palette-200"
+                />
+            )
+        });
+    }
+
+    function editTodo(todoData: ITodo) {
+        setDialogProps({
+            title: "Editar Tarefa",
+            styles: { 
+                content: { padding: 0, width: "100%" },
+                title: { backgroundColor: "#E3D081", color: "#54494B" }
+            },
+            content: (
+                <AddTodoForm editValues={todoData}/>
+            ),
+            actions: (<></>)
+        })
+    }
 
     const progressColor = 
         todo.progress === 100 ? "#ccb14b" :
@@ -78,7 +113,7 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
                     <ListItemAvatar>
                         {
                             todo.completed === true ? (
-                                <BsCheck2Circle className="text-2xl text-app-palette-300"/>
+                                <BsCheck2Circle className="text-3xl text-app-palette-300"/>
                             ) :
                             todo.priority === "Urgente" ? (
                                 <BsExclamationCircleFill className="text-2xl text-red-500 animate-saturate"/>
@@ -106,28 +141,16 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
                         <Avatar sx={{ backgroundColor: "rgba(227, 227, 227, 0.6)" }}>
                             <AiFillDelete
                             className="text-2xl text-app-palette-400"
-                            onClick={() => {
-                                setDialogProps({
-                                    title: "Excluir Tarefa",
-                                    contentText: "Tem certeza que deseja excluir esta tarefa?",
-                                    actions: (
-                                        <CustomButton
-                                        onClick={() => deleteTodo(todo._id!)}
-                                        Text="Excluir"
-                                        className="bg-app-palette-400 text-app-palette-200 font-semibold"
-                                        Icon={AiFillDelete}
-                                        IconStyle="text-2xl text-app-palette-200"
-                                        />
-                                    )
-                                });
-                            }} 
+                            onClick={() => deleteTodo()} 
                             />
                         </Avatar>
-                        
                     </IconButton> 
                     <IconButton edge="end">
                         <Avatar sx={{ backgroundColor: "rgba(227, 227, 227, 0.6)" }}>
-                            <MdModeEditOutline onClick={() => {console.log("edit")}} className="text-2xl text-app-palette-100"/>
+                            <MdModeEditOutline 
+                            className="text-2xl text-app-palette-100"
+                            onClick={() => editTodo(todo)}
+                            />
                         </Avatar>
                     </IconButton>
                 </span>

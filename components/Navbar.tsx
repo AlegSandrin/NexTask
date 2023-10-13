@@ -10,6 +10,7 @@ import { CircularProgress } from "@mui/material";
 export const Navbar = () => {
 
     const { status, data: session } = useSession();
+    const userName = session?.user?.name;
     const userImage = session?.user?.image;
 
     if(status !== "authenticated" ) return <></>;
@@ -25,7 +26,10 @@ export const Navbar = () => {
             </Link>
             {
                 status === 'authenticated' ? (
-                    <span className="flex items-center gap-4">
+                    <span className="flex items-center gap-2 max-w-[70%]">
+                        { userName && 
+                            <label className="font-medium break-all">{userName}</label>
+                        }
                         { userImage && 
                             <Image 
                             src={userImage} 
@@ -36,10 +40,10 @@ export const Navbar = () => {
                         }
                         <button 
                         onClick={() => signOut()}
-                        className="bg-app-palette-400 text-app-palette-200 font-medium p-2 pr-[10px] flex gap-1 rounded-full"
+                        className="bg-app-palette-400 text-app-palette-200 font-medium ml-1 p-2 pr-[10px] flex items-center gap-1 rounded-full"
                         >
-                        <span>Sair</span>
-                        <TbLogout2 className="text-2xl"/>
+                        <span className="text-sm">Sair</span>
+                        <TbLogout2 className="text-lg"/>
                         </button>
                     </span>
                 ) :
