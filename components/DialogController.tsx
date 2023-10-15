@@ -36,9 +36,9 @@ export const DialogController = () => {
                 <CustomButton
                 Text="Cancelar"
                 onClick={() => setDialogProps(null)}
-                className="bg-app-palette-100 text-app-palette-200 font-semibold"
+                className="bg-app-palette-100 text-app-palette-200 font-semibold -sm:text-sm -sm:px-[8px] -sm:py-[6px]"
                 Icon={MdCancel}
-                IconStyle="text-2xl text-app-palette-200"
+                IconStyle="-sm:text-lg text-2xl text-app-palette-200"
                 />
                 {actions}
             </DialogActions>

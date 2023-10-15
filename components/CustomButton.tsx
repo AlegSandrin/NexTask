@@ -8,6 +8,7 @@ type CustomButtonProps = {
     Icon?: IconType | IconType[];
     IconStyle?: string;
     IconDivStyle?: string;
+    children?: React.ReactNode
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 export const buttonStyle = {
@@ -21,6 +22,7 @@ const CustomButton = ({
   Text, 
   className = "", 
   IconDivStyle = "",
+  children,
   ...rest
 }: CustomButtonProps) => {
  
@@ -32,6 +34,7 @@ const CustomButton = ({
     hover:brightness-110 text-base md:text-lg lg:text-xl`,
     `${disabled && 'saturate-50 opacity-70'} ${className}`)}
     >
+      {children}
       { 
         Array.isArray(Icon) &&
           <div className={cn(`flex gap-[2px]`, IconDivStyle)}>

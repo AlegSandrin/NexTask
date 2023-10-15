@@ -21,6 +21,10 @@ function Todo (id: string) {
                 type: String,
                 required: true
             },
+            conclusion_date: {
+                type: String,
+                required: false,
+            },
             progress: {
                 type: Number,
                 required: true
@@ -28,7 +32,11 @@ function Todo (id: string) {
             completed: {
                 type: Boolean,
                 required: true,
-            }
+            },
+            completedAt: {
+                type: String,
+                required: false,
+            },
         },
         { timestamps: true, collection: id }
     );

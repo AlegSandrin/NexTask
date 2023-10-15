@@ -1,117 +1,50 @@
 import { ITodo } from "@/types/TodoType"
-import { Avatar, Box, Collapse, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, TextField, styled } from "@mui/material";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { AiFillDelete } from "react-icons/ai";
-import { MdModeEditOutline } from "react-icons/md";
-import { BsCheck2Circle, BsCircleFill, BsExclamationCircleFill } from "react-icons/bs";
+import { Box, Collapse, List, ListItemAvatar, ListItemButton, ListItemText, TextField } from "@mui/material";
+import { BsCheck2Circle, BsCircleFill, BsExclamationCircleFill, BsCheckSquareFill, BsSquare } from "react-icons/bs";
 import { useState } from "react";
 import { FaTrophy } from "react-icons/fa";
-import api from "@/services/api";
+import { AiFillDelete } from "react-icons/ai";
+import { MdModeEditOutline } from "react-icons/md";
 import { useAlertController, useDialogController } from "@/hooks/states";
 import { useGetTodos } from "@/hooks/apiRequest";
-import CustomButton from "./CustomButton";
 import { useSession } from "next-auth/react";
 import { dateFormatter } from "@/lib/date";
-import { AddTodoForm } from "./AddTodoForm";
+import { BorderLinearProgress, changeCompleted, deleteTodo, editTodo } from "@/lib/todoItem";
 
 export type ITodoItem = {
     todo: ITodo;
+    late?: boolean;
+    task?: boolean;
 }
 
-export const TodoItem = ( { todo }: ITodoItem ) => {
+export const TodoItem = ( { todo, late, task }: ITodoItem ) => {
 
     const [ details, openDetails ] = useState(false);
-    const { setAlertProps } = useAlertController();
     const { refetch } = useGetTodos();
-    const { setDialogProps } = useDialogController();
+    const setAlertProps = useAlertController().setAlertProps;
+    const setDialogProps = useDialogController().setDialogProps;
     const { data: session } = useSession();
     const userData: any = session?.user;
     const userID = userData.id;
 
-    function handleDeleteTodo(todoID: string) {
-      api.post(`/user/delete_todo/${userID}`, {id: todoID})
-      .then(() => {
-        refetch();
-        setAlertProps({
-          severity: "success",
-          title: "Tudo certo.",
-          message: "Tarefa excluída com sucesso!"
-        })
-        setDialogProps(null);
-      })
-      .catch((error) => {
-        setAlertProps({
-          severity: "error",
-          title: "Algo deu errado...",
-          message: "Erro ao excluir tarefa. Tente novamente."
-        })
-        console.error(error);
-      })
-    }
-
-    function deleteTodo() {
-        setDialogProps({
-            title: "Excluir Tarefa",
-            contentText: "Tem certeza que deseja excluir esta tarefa?",
-            styles: {
-                title: { backgroundColor: "#B33951", color: "#F1F7ED" },
-                contentText: { fontWeight: "semibold", paddingTop: '10px' }
-            },
-            actions: (
-                <CustomButton
-                onClick={() => handleDeleteTodo(todo._id!)}
-                Text="Excluir"
-                className="bg-app-palette-400 text-app-palette-200 font-semibold"
-                Icon={AiFillDelete}
-                IconStyle="text-2xl text-app-palette-200"
-                />
-            )
-        });
-    }
-
-    function editTodo(todoData: ITodo) {
-        setDialogProps({
-            title: "Editar Tarefa",
-            styles: { 
-                content: { padding: 0, width: "100%" },
-                title: { backgroundColor: "#E3D081", color: "#54494B" }
-            },
-            content: (
-                <AddTodoForm editValues={todoData}/>
-            ),
-            actions: (<></>)
-        })
-    }
-
-    const progressColor = 
-        todo.progress === 100 ? "#ccb14b" :
-        todo.progress >= 50 ? "#4caf50" :
-        todo.progress >= 25 ? "#ff9800" 
-        : "#f44336";
+    const deleteTask = () => deleteTodo({ userID, todoData: todo, refetch, setAlertProps, setDialogProps });
+    const editTask = () => editTodo({todoData: todo, setDialogProps});
+    const changeCompletedTask = () => changeCompleted({ userID, todoData: todo, refetch, setAlertProps })
     
-    const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-        height: 10,
-        borderRadius: 5,
-        [`&.${linearProgressClasses.colorPrimary}`]: {
-          backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-        },
-        [`& .${linearProgressClasses.bar}`]: {
-          borderRadius: 5,
-          backgroundColor: progressColor,
-        },
-      }));
-
-    return <>
+    return <div className="flex flex-col border border-[rgba(227, 227, 227, 0.8)] drop-shadow-md">
         <ListItemButton
-        sx={{ border: '1px solid rgba(227, 227, 227, 0.8)', display: 'flex', flexDirection: 'column', width: '100%' }}
+        sx={{ width: '100%' }}
         >
-            <div className="flex w-full">
+            <div className="flex w-full justify-between">
                 <span
-                className="flex w-full items-center"
+                className="flex flex-grow items-center"
                 onClick={() => openDetails(!details)}
                 >
-                    <ListItemAvatar>
+                    <ListItemAvatar sx={{ minWidth: '40px'}}>
                         {
+                            late ? (
+                                <BsCircleFill className="text-2xl text-gray-500"/>
+                            ) :
                             todo.completed === true ? (
                                 <BsCheck2Circle className="text-3xl text-app-palette-300"/>
                             ) :
@@ -131,75 +64,113 @@ export const TodoItem = ( { todo }: ITodoItem ) => {
                         }
                     </ListItemAvatar>
                     <ListItemText
-                    primary={todo.title}
-                    secondary={todo.category}
+                    primary={(
+                        <span className="flex flex-col">
+                            {
+                                !task &&
+                                    <div className="flex flex-col border border-app-palette-100 border-opacity-50 rounded-lg w-fit 
+                                    -sm:px-1 -sm:py-[1px] -md:px-2 -md:py-1 md:p-1 mb-1 text-sm -md:text-sm -sm:text-[0.6rem] 
+                                    font-semibold text-app-palette-100">
+                                        {
+                                            todo?.conclusion_date &&
+                                            <label className="-sm:leading-3 leading-4">
+                                                {todo?.completedAt && todo.completed && "Previsão: "} {dateFormatter(new Date(todo?.conclusion_date))}
+                                            </label>
+                                        }
+                                        {
+                                            todo?.completedAt && todo.completed &&
+                                            <label className="-sm:leading-3 leading-4">
+                                                {"Conclusão: "} {dateFormatter(new Date(todo.completedAt))}
+                                            </label>
+                                        }
+                                    </div>
+                            }
+                            <label className="text-base -md:text-sm">{todo.title}</label>
+                        </span>
+                    )}
+                    secondary={(
+                        <label className="break-all opacity-80 mr-2">{todo.category}</label>
+                    )}
                     />
                 </span>
 
-                <span className="flex gap-1">
-                    <IconButton edge="end">
-                        <Avatar sx={{ backgroundColor: "rgba(227, 227, 227, 0.6)" }}>
-                            <AiFillDelete
-                            className="text-2xl text-app-palette-400"
-                            onClick={() => deleteTodo()} 
-                            />
-                        </Avatar>
-                    </IconButton> 
-                    <IconButton edge="end">
-                        <Avatar sx={{ backgroundColor: "rgba(227, 227, 227, 0.6)" }}>
-                            <MdModeEditOutline 
-                            className="text-2xl text-app-palette-100"
-                            onClick={() => editTodo(todo)}
-                            />
-                        </Avatar>
-                    </IconButton>
+                <span className="flex items-center gap-[6px] sm:gap-2 md:gap-3">
+                    {
+                        todo.completed ?
+                        <BsCheckSquareFill
+                        className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:brightness-[0.8] transition"
+                        onClick={() => changeCompletedTask()} 
+                        />
+                        :
+                        <BsSquare
+                        className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:bg-gray-300 rounded-sm transition"
+                        onClick={() => changeCompletedTask()} 
+                        />
+                    }
+                    <button
+                    className="bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity"
+                    >
+                        <MdModeEditOutline 
+                        className="text-2xl -xs:text-xl text-app-palette-100"
+                        onClick={() => editTask()}
+                        />
+                    </button>
+                    <button
+                    className="bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity"
+                    >
+                        <AiFillDelete
+                        className="text-2xl -xs:text-xl text-app-palette-400"
+                        onClick={() => deleteTask()} 
+                        />
+                    </button>
                 </span>
             </div>
-
-            <Collapse 
-            in={details} 
-            timeout="auto" 
-            unmountOnExit 
-            sx={{ width: '100%' }}
-            onClick={() => openDetails(!details)}
-            >
-                <List component="div" sx={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingX: '5px' }}>
-                    <Box sx={{ flexGrow: 1}}>
-                        <span className="flex justify-between">
-                            <label>Progresso:</label>
-                            {
-                                todo.completed === true ? (
-                                    <FaTrophy className="text-3xl text-[#ccb14b]"/>
-                                ) :
-                                <label>{todo.progress}%</label>
-                            }
-                        </span>
-                        <BorderLinearProgress variant="determinate" value={todo.progress} sx={{marginY: '5px'}}/>
-                    </Box>
-                    <TextField
-                    fullWidth
-                    variant="standard"
-                    label="Descrição"
-                    aria-readonly
-                    value={todo.description}
-                    multiline
-                    />
-                    <span className="flex flex-col leading-3">
-                        <label className="text-xs italic opacity-60 mt-1 leading-3">
-                            Data de criação: <strong>{dateFormatter(new Date(todo.createdAt))}</strong>
-                        </label>
-                        {
-                            todo.createdAt !== todo.updatedAt &&
-                            <label className="text-xs italic opacity-60 mt-1 leading-3">
-                                Última modificação: <strong>{dateFormatter(new Date(todo.updatedAt))}</strong>
-                            </label>
-                        }
-                        <label className="text-xs italic opacity-60 mt-1 leading-3">ID da tarefa: {todo._id}</label>
-                    </span>
-                </List>
-            </Collapse>
-
         </ListItemButton>
-    </>
+        <Collapse 
+        in={details} 
+        timeout="auto" 
+        unmountOnExit 
+        sx={{ width: '100%' }}
+        >
+            <List component="div" sx={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingX: '5px' }}>
+                <Box sx={{ flexGrow: 1}}>
+                    <span className="flex justify-between">
+                        <label>Progresso:</label>
+                        {
+                            todo.completed === true ? (
+                                <FaTrophy className="text-3xl text-[#ccb14b]"/>
+                            ) :
+                            <label>{todo.completed ? 100 : todo.progress}%</label>
+                        }
+                    </span>
+                    <BorderLinearProgress 
+                    sx={{marginY: '5px'}}
+                    value={todo.completed ? 100 : todo.progress}
+                    variant="determinate"
+                    />
+                </Box>
+                <TextField
+                fullWidth
+                variant="standard"
+                label="Descrição"
+                aria-readonly
+                value={todo.description}
+                multiline
+                />
+                <span className="flex flex-col leading-3">
+                    <label className="text-xs italic opacity-60 mt-1 leading-3">
+                        Data de criação: <strong>{dateFormatter(new Date(todo.createdAt))}</strong>
+                    </label>
+                    {
+                        todo.createdAt !== todo.updatedAt &&
+                        <label className="text-xs italic opacity-60 mt-1 leading-3">
+                            Última modificação: <strong>{dateFormatter(new Date(todo.updatedAt))}</strong>
+                        </label>
+                    }
+                    <label className="text-xs italic opacity-60 mt-1 leading-3">ID da tarefa: {todo._id}</label>
+                </span>
+            </List>
+        </Collapse>
+    </div>
     
 }

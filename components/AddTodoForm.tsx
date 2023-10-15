@@ -17,7 +17,8 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
             category: "",
             priority: "Média",
             progress: 0,
-            completed: false
+            completed: false,
+            conclusion_date: "",
         }
     });
     const { data: session } = useSession();
@@ -29,7 +30,7 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
 
     function submitTodo(data: ITodo){
         const route = editValues ? "update_todo" : "create_todo";
-        const messages = editValues ? ["atualizada, atualizar"] : ["registrada, registrar"];
+        const messages = editValues ? ["atualizada" , "atualizar"] : ["registrada" , "registrar"];
         (editValues ? api.patch : api.post)(`/user/${route}/${userID}`, data)
         .then(() => {
             reset();
@@ -94,6 +95,7 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
                     render={({ field }) =>
                         <Autocomplete
                         defaultValue={editValues ? editValues.category : null}
+                        isOptionEqualToValue={undefined}
                         disablePortal
                         id="category"
                         options={["Educação", "Trabalho", "Lazer", "Outros"]}
@@ -143,6 +145,24 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
                                 <MenuItem value="Alta">Alta</MenuItem>
                                 <MenuItem value="Urgente">Urgente</MenuItem>
                             </Select>
+                        </>
+                    }
+                    />
+
+                    <Controller
+                    name="conclusion_date"
+                    control={control}
+                    rules={{required: false}}
+                    defaultValue=""
+                    render={({ field }) => 
+                        <>
+                            <InputLabel id="conclusion_date">Data de conclusão</InputLabel>
+                            <TextField
+                            {...field} 
+                            id="conclusion_date"
+                            type="datetime-local"
+                            variant="outlined" 
+                            />
                         </>
                     }
                     />

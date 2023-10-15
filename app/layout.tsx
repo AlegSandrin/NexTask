@@ -15,6 +15,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'NexTask',
   description: 'Aplicação de cadastro e controle de tarefas',
+  icons: {
+    icon: '../public/NexTask-logo.png',
+  }
 }
 
 export default function RootLayout({
@@ -25,10 +28,13 @@ export default function RootLayout({
 
   return (
     <html lang="pt">
+      <head>
+        <link rel="icon" href="/public/NexTask-logo.png" type="image/x-icon" sizes='any' />
+      </head>
       <body className={inter.className}>
         <NextAuthProvider>
           <ReactQueryProvider>
-            <div className='md:max-w-3xl mx-auto'>
+            <div className='w-full h-full md:h-screen'>
               <Navbar/>
               <AlertController/>
               <DialogController/>

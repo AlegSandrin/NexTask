@@ -22,8 +22,10 @@ export const AlertController = () => {
     if(props === null) return <></>
 
         return <>
-        <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", zIndex: 50, opacity: 0.95}}>
-            <Collapse in={props !== null}>
+        <Box sx={{ width: "100%", padding: "1rem", bottom: "0", position: "fixed", zIndex: 50, opacity: 0.8}}>
+            <Collapse in={props !== null}
+            onClick={() => setAlertProps(null)}
+            >
                 <Alert severity={severity} variant="standard" sx={{ border:"1px solid", borderColor : "rgba(84, 73, 75, 0.6)", borderRadius: "20px" }}>
                     <AlertTitle>{title}</AlertTitle>
                     {message}

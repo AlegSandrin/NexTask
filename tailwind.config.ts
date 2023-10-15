@@ -50,12 +50,39 @@ const config: Config = {
             filter: 'brightness(1.5)',
             transform: 'scale(1.1)',
           }
+        },
+        crown: {
+          '50%': {
+            color: '#f0c467',
+          }
+        },
+        logo: {
+          '0%': {
+            color: '#E3D081'
+          },
+          '20%': {
+            color: '#54494B'
+          },
+          '40%': {
+            color: '#e9ede6'
+          },
+          '60%': {
+            color: '#91C7B1'
+          },
+          '80%': {
+            color: '#B33951'
+          },
+          '100%': {
+            color: '#E3D081'
+          }
         }
       },
       animation: {
         glow: 'glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         glow_saturate: 'glow_saturate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        saturate: 'saturate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        saturate: 'saturate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        crown: 'crown 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        logo: 'logo 10s cubic-bezier(0.4, 0, 0.6, 1) infinite'
       }
     },
   },
