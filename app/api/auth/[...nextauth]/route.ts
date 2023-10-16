@@ -21,6 +21,7 @@ const authOptions: AuthOptions = {
                 try {
                     // Conecta ao MongoDB e faz uma busca verificando se existe um usuário com esse email
                     const userExists = await User.findOne({email}).exec();
+                    console.log(userExists)
                     await connectAuthDB().close();
 
                     if(!userExists) {
