@@ -1,27 +1,28 @@
-import { IAlertController, IDialogController } from "@/hooks/states";
+import { IAlertController, IDialogController, INoSigInSession } from "@/hooks/states";
 import api from "@/services/api";
 import { ITodo } from "@/types/TodoType";
 import { UseFormReset } from "react-hook-form";
 
-export type IAddTodo = {
+export type IHandleAddTodo = {
     userID: string;
     data: ITodo;
     localData: boolean;
     setAlertProps: IAlertController["setAlertProps"];
     refetch: () => Promise<any>;
     reset: UseFormReset<ITodo>;
+    setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function addTodo({ userID, data, localData, setAlertProps, refetch, reset }: IAddTodo) {   
+export function handleAddTodo({ userID, data, localData, setAlertProps, refetch, reset, setLocalData }: IHandleAddTodo) {   
     // Adiciona a tarefa localmente
     if(localData) {
+        // Se ainda não houver nenhum item em "todos" no localStorage, criará um novo array vazio
         if(!localStorage.getItem("todos")) localStorage.setItem("todos", JSON.stringify([]));
         let storageData = JSON.parse(localStorage.getItem("todos")!);
         localStorage.setItem("todos", JSON.stringify([
             ...storageData,
             {   
                 ...data, 
-                _id: storageData.length + 1, 
                 createdAt: new Date().toJSON(), 
                 updatedAt: new Date().toJSON()
             }
@@ -33,7 +34,8 @@ export function addTodo({ userID, data, localData, setAlertProps, refetch, reset
             title: "Tudo certo.",
             message: `Tarefa atualizada com sucesso!`
         });
-        reset()
+        reset();
+        setLocalData();
         return;
     }
 
@@ -58,16 +60,17 @@ export function addTodo({ userID, data, localData, setAlertProps, refetch, reset
     })
 }
 
-export type IEditTodo = {
+export type IHandleEditTodo = {
     setDialogProps: IDialogController["setDialogProps"];
-    todoIndex: number;
-} & Omit<IAddTodo, "reset">
+} & Omit<IHandleAddTodo, "reset">
 
-export function editTodo({ userID, data, localData, todoIndex, setDialogProps, setAlertProps, refetch }: IEditTodo) {
+export function handleEditTodo({ userID, data, localData, setLocalData, setDialogProps, setAlertProps, refetch }: IHandleEditTodo) {
     // Atualiza a tarefa localmente
     if(localData) {
-        let storageData = JSON.parse(localStorage.getItem("todos")!);
-        storageData[todoIndex] = {...data, updatedAt: new Date().toJSON()}
+        // Resgata o array com as tarefas do localStorage
+        let storageData: ITodo[] = JSON.parse(localStorage.getItem("todos")!);
+        // Substitui os dados da tarefa que deve ser atualizada com os novos dados e adiciona a data atual ao campo "updateAt"
+        storageData.splice(data._id as number, 1, {...data, updatedAt: new Date().toJSON()})
         localStorage.setItem("todos", JSON.stringify(storageData))
         
         setAlertProps({
@@ -75,6 +78,7 @@ export function editTodo({ userID, data, localData, todoIndex, setDialogProps, s
             title: "Tudo certo.",
             message: `Tarefa atualizada com sucesso!`
         });
+        setLocalData();
         setDialogProps(null);
         return;
     }

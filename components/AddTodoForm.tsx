@@ -6,9 +6,9 @@ import { useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form"
 import CustomButton from "./CustomButton";
 import { BsFillSendPlusFill, BsSendCheckFill } from "react-icons/bs";
-import { addTodo, editTodo } from "@/lib/addTodoForm";
+import { handleAddTodo, handleEditTodo } from "@/lib/addTodoForm";
 
-export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, todoIndex?: number } ) => {
+export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
 
     const { control, setValue, handleSubmit, reset, watch } = useForm<ITodo>({
         defaultValues: editValues ? editValues : {
@@ -26,28 +26,29 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
     const userID = userData ? userData?.id : "";
     const { setAlertProps } = useAlertController();
     const { setDialogProps } = useDialogController();
+    const { setLocalData } = useNoSigInSession();
     const { refetch } = useGetTodos();
+    const generalProps = {
+        userID,
+        localData: status === "authenticated" ? false : true,
+        setLocalData,
+        refetch,
+        setAlertProps,
+        setDialogProps,
+        reset
+    }
 
     function submitTodo(data: ITodo){
         if(editValues){
-            editTodo({
-                userID,
-                data,
-                localData: status === "authenticated" ? false : true,
-                todoIndex: todoIndex!,
-                refetch,
-                setAlertProps,
-                setDialogProps,
+            handleEditTodo({
+                ...generalProps,
+                data
             })
             return
         }
-        addTodo({
-            userID,
-            data: data.completed ? {...data, completedAt: new Date().toJSON()} : data,
-            localData: status === "authenticated" ? false : true,
-            refetch,
-            setAlertProps,
-            reset
+        handleAddTodo({
+            ...generalProps,
+            data: data.completed ? {...data, completedAt: new Date().toJSON()} : data
         });
     }
 
@@ -77,12 +78,15 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
                     <Controller
                     name="description"
                     control={control}
+                    rules={{required: true}}
                     render={({ field }) =>
                         <TextField 
                         {...field}
+                        required
                         label="Descrição da tarefa" 
                         variant="outlined" 
                         multiline
+                        rows={3}
                         />
                     }
                     />
@@ -91,6 +95,7 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
                     name="category"
                     control={control}
                     defaultValue={editValues ? editValues.category : ""}
+                    rules={{required: true}}
                     render={({ field }) =>
                         <Autocomplete
                         value={watch("category")}
@@ -134,11 +139,13 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
                     <Controller
                     name="priority"
                     control={control}
+                    rules={{required: true}}
                     render={({ field }) => 
                         <>
                             <InputLabel id="priority">Prioridade</InputLabel>
                             <Select
                             {...field}
+                            required
                             id="priority"
                             >
                                 <MenuItem value="Baixa">Baixa</MenuItem>

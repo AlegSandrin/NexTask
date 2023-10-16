@@ -1,5 +1,5 @@
 export type ITodo = {
-    _id: string;
+    _id: string | number;
     title: string;
     description: string;
     category: string | null;

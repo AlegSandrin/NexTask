@@ -1,3 +1,5 @@
+import { getLocalTodoID } from "@/lib/getLocalTodoID";
+import { ITodo } from "@/types/TodoType";
 import { SxProps, Theme } from "@mui/material";
 import { create } from "zustand";
 
@@ -48,6 +50,8 @@ export const useDialogController = create<IDialogController>((set) => ({
 export type INoSigInSession = {
     username?: string;
     setUsernameSession: (username: string | undefined) => void;
+    localData?: ITodo[];
+    setLocalData: () => void;
 }
 
 export const useNoSigInSession = create<INoSigInSession>((set) => ({
@@ -56,5 +60,11 @@ export const useNoSigInSession = create<INoSigInSession>((set) => ({
         set(() => ({
             username,
         }));
-    }
+    },
+    localData: getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
+    setLocalData: () => {
+        set(() => ({
+            localData: getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
+        }));
+    },
 }))

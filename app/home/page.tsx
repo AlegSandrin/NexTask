@@ -20,7 +20,7 @@ export default function Home() {
   const router = useRouter();
   const name = username ? username : session?.user?.name;
   const shortName = name?.split(' ')[0];
-  const [ addTodo, openAddTodo ] = useState(false);
+  const [ isOpenAddTodo, openAddTodo ] = useState(false);
 
   function helloMessage() {
     var today = new Date();
@@ -64,13 +64,13 @@ export default function Home() {
         <div className="flex justify-center items-center">
           <CustomButton 
           Text="Adicionar tarefa" 
-          onClick={() => openAddTodo(!addTodo)}
+          onClick={() => openAddTodo(!isOpenAddTodo)}
           className="bg-app-palette-500 text-app-palette-100 font-semibold w-fit -sm:text-sm"
           Icon={MdAddTask}
           IconStyle="text-2xl -sm:text-xl text-app-palette-400"
           />
         </div>
-        <Collapse in={addTodo}>
+        <Collapse in={isOpenAddTodo}>
           <AddTodoForm/>
         </Collapse>
       </div>

@@ -1,6 +1,6 @@
 import { AddTodoForm } from "@/components/AddTodoForm";
 import CustomButton from "@/components/CustomButton";
-import { IAlertController, IDialogController } from "@/hooks/states";
+import { IAlertController, IDialogController, INoSigInSession } from "@/hooks/states";
 import api from "@/services/api";
 import { ITodo } from "@/types/TodoType";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -12,22 +12,25 @@ type IDeleteTodo = {
     userID: string;
     todoData: ITodo;
     localData: boolean;
-    todoIndex: number;
     refetch: () => void;
     setAlertProps: IAlertController["setAlertProps"];
     setDialogProps: IDialogController["setDialogProps"];
+    setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function handleDeleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps } : IDeleteTodo) {
+export function handleDeleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData } : IDeleteTodo) {
   if(localData) {
     let todoList = JSON.parse(localStorage.getItem('todos')!);
-    todoList.splice(todoIndex, 1);
+    todoList.splice(todoData._id , 1);
+
     localStorage.setItem('todos', JSON.stringify(todoList));
+    setLocalData();
     setAlertProps({
       severity: "success",
       title: "Tudo certo.",
       message: "Tarefa excluída com sucesso!"
     });
+    setDialogProps(null);
     return;
   }
   
@@ -50,7 +53,7 @@ export function handleDeleteTodo({ userID, todoData, localData, todoIndex, refet
     console.error(error);
   })
 }
-export function deleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps }: IDeleteTodo) {
+export function deleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData }: IDeleteTodo) {
     setDialogProps({
         title: "Excluir Tarefa",
         contentText: "Tem certeza que deseja excluir esta tarefa?",
@@ -61,7 +64,7 @@ export function deleteTodo({ userID, todoData, localData, todoIndex, refetch, se
         actions: (
           <CustomButton
           onClick={() => {
-          handleDeleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps })
+          handleDeleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData })
           }}
           Text="Excluir"
           className="bg-app-palette-400 text-app-palette-200 font-semibold -sm:text-sm -sm:px-[8px] -sm:py-[6px]"
@@ -73,12 +76,11 @@ export function deleteTodo({ userID, todoData, localData, todoIndex, refetch, se
 }
 
 type IEditTodo = {
-  todoData: ITodo,
-  todoIndex: number; 
-  setDialogProps: IDialogController["setDialogProps"]
+  todoData: ITodo;
+  setDialogProps: IDialogController["setDialogProps"];
 }
 
-export function editTodo( { todoData, todoIndex, setDialogProps }: IEditTodo ) {
+export function editTodo( { todoData, setDialogProps }: IEditTodo ) {
     setDialogProps({
       title: "Editar Tarefa",
       styles: { 
@@ -86,7 +88,7 @@ export function editTodo( { todoData, todoIndex, setDialogProps }: IEditTodo ) {
           title: { backgroundColor: "#E3D081", color: "#54494B" }
       },
       content: (
-          <AddTodoForm editValues={todoData} todoIndex={todoIndex}/>
+          <AddTodoForm editValues={todoData}/>
       ),
       actions: (<></>)
     })
@@ -96,12 +98,12 @@ type IChangeCompleted = {
   userID: string;
   todoData: ITodo;
   localData: boolean;
-  todoIndex: number;
   refetch: () => void;
   setAlertProps: IAlertController["setAlertProps"];
+  setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function changeCompleted({ userID, todoData, localData, todoIndex, refetch, setAlertProps }: IChangeCompleted) {
+export function changeCompleted({ userID, todoData, localData, refetch, setAlertProps, setLocalData }: IChangeCompleted) {
     let changedTodo: ITodo & { completedAt?: string } = {
       ...todoData,
       completed: !todoData.completed
@@ -115,7 +117,7 @@ export function changeCompleted({ userID, todoData, localData, todoIndex, refetc
 
     if(localData){
       let todoList = JSON.parse(localStorage.getItem('todos')!);
-      todoList[todoIndex!] = changedTodo;
+      todoList[todoData._id] = changedTodo;
       localStorage.setItem('todos', JSON.stringify(todoList));
       setAlertProps({
         severity: "success",
@@ -123,7 +125,8 @@ export function changeCompleted({ userID, todoData, localData, todoIndex, refetc
         message: changedTodo.completed 
           ? "Uhuul! Tarefa concluída!" 
           : "Conclusão removida com sucesso."
-      })
+      });
+      setLocalData();
       return;
     }
 

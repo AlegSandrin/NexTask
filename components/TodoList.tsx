@@ -8,12 +8,13 @@ import { useEffect, useState } from "react";
 import { organizeData } from "@/lib/todoList";
 import { SkeletonLoading } from "./SkeletonLoading";
 import { useSession } from "next-auth/react";
+import { useNoSigInSession } from "@/hooks/states";
 
 export const TodoList = () => {
 
     const { data, isLoading } = useGetTodos();
     const { status } = useSession();
-    const localData = JSON.parse(localStorage.getItem('todos') || "[]");
+    const { localData } = useNoSigInSession();
     const [ dataList, setDataList ] = useState<{ [group: string]: ITodo[] }>({
         tasks: [],
         today: [],
@@ -28,6 +29,8 @@ export const TodoList = () => {
         const organizedData = organizeData(status === "authenticated" ? data : localData);
         setDataList(organizedData);
     },[data, localData]);
+
+    window.addEventListener('storage', () => console.log("teste"));
 
 
     if(isLoading) return <SkeletonLoading/>

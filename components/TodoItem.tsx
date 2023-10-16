@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FaTrophy } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import { MdModeEditOutline } from "react-icons/md";
-import { useAlertController, useDialogController } from "@/hooks/states";
+import { useAlertController, useDialogController, useNoSigInSession } from "@/hooks/states";
 import { useGetTodos } from "@/hooks/apiRequest";
 import { useSession } from "next-auth/react";
 import { dateFormatter } from "@/lib/date";
@@ -24,6 +24,7 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
     const { refetch } = useGetTodos();
     const setAlertProps = useAlertController().setAlertProps;
     const setDialogProps = useDialogController().setDialogProps;
+    const { setLocalData } = useNoSigInSession();
     const { data: session, status } = useSession();
     const userData: any = session?.user;
     const userID = userData ? userData?.id : "";
@@ -33,12 +34,13 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
         localData: status === "authenticated" ? false : true,
         refetch,
         setAlertProps,
-        setDialogProps
+        setDialogProps,
+        setLocalData
     }
 
-    const deleteTask = (todoIndex: number) => deleteTodo({...generalProps, todoIndex});
-    const editTask = (todoIndex: number) => editTodo({...generalProps, todoIndex});
-    const changeCompletedTask = (todoIndex: number) => changeCompleted({...generalProps, todoIndex});
+    const deleteTask = () => deleteTodo({...generalProps});
+    const editTask = () => editTodo({...generalProps});
+    const changeCompletedTask = () => changeCompleted({...generalProps});
     
     return <div className="flex flex-col border border-[rgba(227, 227, 227, 0.8)] drop-shadow-md">
         <ListItemButton
@@ -108,12 +110,12 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
                         todo.completed ?
                         <BsCheckSquareFill
                         className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:brightness-[0.8] transition"
-                        onClick={() => changeCompletedTask(todoIndex)} 
+                        onClick={() => changeCompletedTask()} 
                         />
                         :
                         <BsSquare
                         className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:bg-gray-300 rounded-sm transition"
-                        onClick={() => changeCompletedTask(todoIndex)} 
+                        onClick={() => changeCompletedTask()} 
                         />
                     }
                     <button
@@ -121,7 +123,7 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
                     >
                         <MdModeEditOutline 
                         className="text-2xl -xs:text-xl text-app-palette-100"
-                        onClick={() => editTask(todoIndex)}
+                        onClick={() => editTask()}
                         />
                     </button>
                     <button
@@ -129,7 +131,7 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
                     >
                         <AiFillDelete
                         className="text-2xl -xs:text-xl text-app-palette-400"
-                        onClick={() => deleteTask(todoIndex)} 
+                        onClick={() => deleteTask()} 
                         />
                     </button>
                 </span>
