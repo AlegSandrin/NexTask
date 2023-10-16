@@ -13,23 +13,32 @@ import { BorderLinearProgress, changeCompleted, deleteTodo, editTodo } from "@/l
 
 export type ITodoItem = {
     todo: ITodo;
+    todoIndex: number;
     late?: boolean;
     task?: boolean;
 }
 
-export const TodoItem = ( { todo, late, task }: ITodoItem ) => {
+export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
 
     const [ details, openDetails ] = useState(false);
     const { refetch } = useGetTodos();
     const setAlertProps = useAlertController().setAlertProps;
     const setDialogProps = useDialogController().setDialogProps;
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const userData: any = session?.user;
-    const userID = userData.id;
+    const userID = userData ? userData?.id : "";
+    const generalProps = {
+        userID,
+        todoData: todo,
+        localData: status === "authenticated" ? false : true,
+        refetch,
+        setAlertProps,
+        setDialogProps
+    }
 
-    const deleteTask = () => deleteTodo({ userID, todoData: todo, refetch, setAlertProps, setDialogProps });
-    const editTask = () => editTodo({todoData: todo, setDialogProps});
-    const changeCompletedTask = () => changeCompleted({ userID, todoData: todo, refetch, setAlertProps })
+    const deleteTask = (todoIndex: number) => deleteTodo({...generalProps, todoIndex});
+    const editTask = () => editTodo(generalProps);
+    const changeCompletedTask = (todoIndex: number) => changeCompleted({...generalProps, todoIndex});
     
     return <div className="flex flex-col border border-[rgba(227, 227, 227, 0.8)] drop-shadow-md">
         <ListItemButton
@@ -99,12 +108,12 @@ export const TodoItem = ( { todo, late, task }: ITodoItem ) => {
                         todo.completed ?
                         <BsCheckSquareFill
                         className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:brightness-[0.8] transition"
-                        onClick={() => changeCompletedTask()} 
+                        onClick={() => changeCompletedTask(todoIndex)} 
                         />
                         :
                         <BsSquare
                         className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:bg-gray-300 rounded-sm transition"
-                        onClick={() => changeCompletedTask()} 
+                        onClick={() => changeCompletedTask(todoIndex)} 
                         />
                     }
                     <button
@@ -120,7 +129,7 @@ export const TodoItem = ( { todo, late, task }: ITodoItem ) => {
                     >
                         <AiFillDelete
                         className="text-2xl -xs:text-xl text-app-palette-400"
-                        onClick={() => deleteTask()} 
+                        onClick={() => deleteTask(todoIndex)} 
                         />
                     </button>
                 </span>

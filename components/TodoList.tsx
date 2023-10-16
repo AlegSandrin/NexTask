@@ -1,5 +1,4 @@
 import { ITodo } from "@/types/TodoType";
-import { List, Skeleton } from "@mui/material";
 import { TodoItem } from "./TodoItem";
 import { useGetTodos } from "@/hooks/apiRequest";
 import { BsCheck2Circle, BsCircleFill, BsExclamationCircleFill, BsFillExclamationCircleFill } from "react-icons/bs";
@@ -8,10 +7,13 @@ import { RiVipCrown2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import { organizeData } from "@/lib/todoList";
 import { SkeletonLoading } from "./SkeletonLoading";
+import { useSession } from "next-auth/react";
 
 export const TodoList = () => {
 
     const { data, isLoading } = useGetTodos();
+    const { status } = useSession();
+    const localData = JSON.parse(localStorage.getItem('todos') || "[]");
     const [ dataList, setDataList ] = useState<{ [group: string]: ITodo[] }>({
         tasks: [],
         today: [],
@@ -23,14 +25,16 @@ export const TodoList = () => {
     useEffect(() => {
         // Observa sempre que a variavel "data" sofrer modificações 
         // OBS: Serve para atualizar os dados da lista a cada "refetch"
-        const organizedData = organizeData(data);
+        const organizedData = organizeData(status === "authenticated" ? data : localData);
         setDataList(organizedData);
-    },[data])
+    },[data, localStorage.getItem('todos')]);
 
 
     if(isLoading) return <SkeletonLoading/>
 
-    if(data?.length === 0) return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+    if( status === "authenticated" && data?.length === 0) return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+    else if(!localData || localData?.length === 0) return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+
     return <>
         <div className="flex flex-col flex-grow h-max justify-center items-center -md:mt-2 md:px-1 md:pb-2">
             <div className="flex flex-col p-1">
@@ -56,7 +60,7 @@ export const TodoList = () => {
                             <label>Afazeres:</label>
                         </span>
                         {
-                            dataList.tasks.map((todo: ITodo) => <TodoItem todo={todo} key={todo._id!} task/>)
+                            dataList.tasks.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} task/>)
                         }
                     </div>
                 }
@@ -69,7 +73,7 @@ export const TodoList = () => {
                             <label>Para hoje!:</label>
                         </span>
                         {
-                            dataList.today.map((todo: ITodo) => <TodoItem todo={todo} key={todo._id!} />)
+                            dataList.today.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
                         }
                     </div>
                 }
@@ -82,7 +86,7 @@ export const TodoList = () => {
                             <label>Pendentes:</label>
                         </span>
                         {
-                            dataList.pending.map((todo: ITodo) => <TodoItem todo={todo} key={todo._id!} />)
+                            dataList.pending.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
                         }
                     </div>
                 }
@@ -95,7 +99,7 @@ export const TodoList = () => {
                             <label>Em atraso:</label>
                         </span>
                         {
-                            dataList.late.map((todo: ITodo) => <TodoItem todo={todo} key={todo._id!} late/>)
+                            dataList.late.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} late/>)
                         }
                     </div>
                 }
@@ -109,7 +113,7 @@ export const TodoList = () => {
                             <label>Completas:</label>
                         </span> 
                         {
-                            dataList.completed.map((todo: ITodo) => <TodoItem todo={todo} key={todo._id!} />)
+                            dataList.completed.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
                         }
                     </div>
                 }

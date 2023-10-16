@@ -11,12 +11,14 @@ import { Collapse } from "@mui/material";
 import CustomButton from "@/components/CustomButton";
 import { MdAddTask } from "react-icons/md";
 import { TodoList } from "@/components/TodoList";
+import { useNoSigInSession } from "@/hooks/states";
 
 export default function Home() {
 
   const { data: session, status } = useSession();
+  const username = useNoSigInSession().username;
   const router = useRouter();
-  const name = session?.user?.name;
+  const name = username ? username : session?.user?.name;
   const shortName = name?.split(' ')[0];
   const [ addTodo, openAddTodo ] = useState(false);
 
@@ -30,16 +32,16 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!session) {
+    if (!session && !username) {
       // Se o usuário não estiver logado, redireciona para página de login
       router.push('/login');
     }
     return () => {};
-  },[])
+  },[session])
 
-  if (status === 'loading') return <Loading/>
+  if (!username && status === 'loading') return <Loading/>
   
-  if (session)
+  if(session || username)
   return (
     <main className="flex -md:flex-col md:flex-row-reverse md:overflow-hidden w-full h-full -md:px-1 -md:py-2 md:border-2 md:border-app-palette-100 md:border-opacity-50">
 

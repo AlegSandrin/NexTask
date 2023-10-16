@@ -6,14 +6,17 @@ import Image from "next/image";
 import { TbLogout2 } from "react-icons/tb";
 import NexTaskLogo from "../public/NexTask-logo.png";
 import { CircularProgress } from "@mui/material";
+import { useNoSigInSession } from "@/hooks/states";
+import { FaCircleUser } from "react-icons/fa6";
 
 export const Navbar = () => {
 
     const { status, data: session } = useSession();
     const userName = session?.user?.name;
     const userImage = session?.user?.image;
+    const { username, setUsernameSession } = useNoSigInSession();
 
-    if(status !== "authenticated" ) return <></>;
+    if(status !== "authenticated" && !username ) return <></>;
 
     return (
         <nav className="p-2 -md:p-1 max-h-24 flex justify-between items-center shadow-md bg-app-palette-100 text-app-palette-200">
@@ -25,23 +28,24 @@ export const Navbar = () => {
                 /> 
             </Link>
             {
-                status === 'authenticated' ? (
+                status === 'authenticated' || username ? (
                     <span className="flex items-center gap-2 -sm:max-w-[70%] max-w-[350px]">
-                        { userName && 
+                        { userName || username &&
                             <span className="-sm:max-w-[45%] w-full text-end">
-                                <label className="font-medium break-words -sm:text-xs">{userName}</label>
+                                <label className="font-medium break-words -sm:text-xs">{userName ? userName : username}</label>
                             </span>
                         }
-                        { userImage && 
+                        { userImage ? 
                             <Image 
                             src={userImage} 
                             alt="Foto de perfil do usuário"
                             width={50} height={50}
                             className="rounded-full h-[50px] w-[50px] -sm:h-[35px] -sm:w-[35px]"
-                            /> 
+                            />
+                            : <FaCircleUser className="h-auto -sm:w-[90px] w-[110px] text-app-palette-500"/>
                         }
                         <button 
-                        onClick={() => signOut()}
+                        onClick={() => { signOut(); setUsernameSession(undefined) }}
                         className="bg-app-palette-400 text-app-palette-200 font-medium ml-1 p-2 pr-[10px] -sm:p-1 -sm:pr-[5px] flex items-center gap-1 rounded-full"
                         >
                         <span className="text-sm -sm:text-xs">Sair</span>

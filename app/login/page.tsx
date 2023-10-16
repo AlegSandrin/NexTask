@@ -30,7 +30,7 @@ const Login = () => {
     <main className="h-full w-full pt-3 overflow-x-hidden">
       <div className="w-full h-full justify-center items-center flex-col">
         <Image src={Banner} alt="Banner NexTask" className="object-contain -md:max-h-[250px] max-h-[350px] animate-glow_saturate mx-auto"/>
-        <div className="flex flex-col -md:w-[80%] max-w-[500px] gap-4 self-center mx-auto my-3 text-center p-2 shadow-xl">
+        <div className="flex flex-col -md:w-[80%] max-w-[500px] gap-4 self-center mx-auto my-3 text-center p-2 pb-3 shadow-xl">
           <h2 className="text-2xl font-semibold leading-5">Seja bem-vindo(a) ao</h2>
           <h1 className="text-4xl font-bold leading-5 flex justify-center items-center my-3"> <label className="animate-logo text-[#54494B]">NexTask </label>
             <span className="flex text-app-palette-400 animate-bounce">

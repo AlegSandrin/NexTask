@@ -44,3 +44,17 @@ export const useDialogController = create<IDialogController>((set) => ({
         }));
     },
 }))
+
+export type INoSigInSession = {
+    username?: string;
+    setUsernameSession: (username: string | undefined) => void;
+}
+
+export const useNoSigInSession = create<INoSigInSession>((set) => ({
+    username: undefined,
+    setUsernameSession: (username) => {
+        set(() => ({
+            username,
+        }));
+    }
+}))

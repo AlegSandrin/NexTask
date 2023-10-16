@@ -11,12 +11,27 @@ import { AiFillDelete } from "react-icons/ai";
 type IDeleteTodo = {
     userID: string;
     todoData: ITodo;
+    localData: boolean;
+    todoIndex?: number;
     refetch: () => void;
     setAlertProps: IAlertController["setAlertProps"];
     setDialogProps: IDialogController["setDialogProps"];
 }
 
-export function handleDeleteTodo({ userID, todoData, refetch, setAlertProps, setDialogProps } : IDeleteTodo) {
+export function handleDeleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps } : IDeleteTodo) {
+  
+  if(localData && todoIndex) {
+    let todoList = JSON.parse(localStorage.getItem('todos')!);
+    todoList.splice(todoIndex, 1);
+    localStorage.setItem('todos', JSON.stringify(todoList));
+    setAlertProps({
+      severity: "success",
+      title: "Tudo certo.",
+      message: "Tarefa excluída com sucesso!"
+    });
+    return;
+  }
+  
   api.post(`/user/delete_todo/${userID}`, {id: todoData._id})
   .then(() => {
     refetch();
@@ -36,7 +51,7 @@ export function handleDeleteTodo({ userID, todoData, refetch, setAlertProps, set
     console.error(error);
   })
 }
-export function deleteTodo({ userID, todoData, refetch, setAlertProps, setDialogProps }: IDeleteTodo) {
+export function deleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps }: IDeleteTodo) {
     setDialogProps({
         title: "Excluir Tarefa",
         contentText: "Tem certeza que deseja excluir esta tarefa?",
@@ -47,7 +62,7 @@ export function deleteTodo({ userID, todoData, refetch, setAlertProps, setDialog
         actions: (
           <CustomButton
           onClick={() => {
-          handleDeleteTodo({ userID, todoData, refetch, setAlertProps, setDialogProps })
+          handleDeleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps })
           }}
           Text="Excluir"
           className="bg-app-palette-400 text-app-palette-200 font-semibold -sm:text-sm -sm:px-[8px] -sm:py-[6px]"
@@ -65,26 +80,28 @@ type IEditTodo = {
 
 export function editTodo( { todoData, setDialogProps }: IEditTodo ) {
     setDialogProps({
-        title: "Editar Tarefa",
-        styles: { 
-            content: { padding: 0, width: "100%" },
-            title: { backgroundColor: "#E3D081", color: "#54494B" }
-        },
-        content: (
-            <AddTodoForm editValues={todoData}/>
-        ),
-        actions: (<></>)
+      title: "Editar Tarefa",
+      styles: { 
+          content: { padding: 0, width: "100%" },
+          title: { backgroundColor: "#E3D081", color: "#54494B" }
+      },
+      content: (
+          <AddTodoForm editValues={todoData}/>
+      ),
+      actions: (<></>)
     })
 }
 
 type IChangeCompleted = {
   userID: string;
   todoData: ITodo;
+  localData: boolean;
+  todoIndex?: number;
   refetch: () => void;
   setAlertProps: IAlertController["setAlertProps"];
 }
 
-export function changeCompleted({ userID, todoData, refetch, setAlertProps }: IChangeCompleted) {
+export function changeCompleted({ userID, todoData, localData, todoIndex, refetch, setAlertProps }: IChangeCompleted) {
     let changedTodo: ITodo & { completedAt?: string } = {
       ...todoData,
       completed: !todoData.completed
@@ -95,6 +112,20 @@ export function changeCompleted({ userID, todoData, refetch, setAlertProps }: IC
         ...changedTodo,
         completedAt: new Date().toJSON()
       }
+
+    if(localData && todoIndex){
+      let todoList = JSON.parse(localStorage.getItem('todos')!);
+      todoList[todoIndex!] = changedTodo;
+      localStorage.setItem('todos', JSON.stringify(todoList));
+      setAlertProps({
+        severity: "success",
+        title: "Tudo certo.",
+        message: changedTodo.completed 
+          ? "Uhuul! Tarefa concluída!" 
+          : "Conclusão removida com sucesso."
+      })
+      return;
+    }
 
     api.patch(`/user/update_todo/${userID}`, changedTodo)
     .then(() => {

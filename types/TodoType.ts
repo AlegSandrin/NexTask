@@ -2,7 +2,7 @@ export type ITodo = {
     _id: string;
     title: string;
     description: string;
-    category: string;
+    category: string | null;
     priority: string;
     conclusion_date?: string;
     progress: number;

@@ -1,55 +1,56 @@
 import { useGetTodos } from "@/hooks/apiRequest";
-import { useAlertController, useDialogController } from "@/hooks/states";
-import api from "@/services/api";
+import { useAlertController, useDialogController, useNoSigInSession } from "@/hooks/states";
 import { ITodo } from "@/types/TodoType";
-import { Autocomplete, Button, Chip, InputLabel, MenuItem, Select, Slider, Stack, TextField } from "@mui/material";
+import { Autocomplete, Chip, InputLabel, MenuItem, Select, Slider, Stack, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form"
 import CustomButton from "./CustomButton";
 import { BsFillSendPlusFill, BsSendCheckFill } from "react-icons/bs";
+import { addTodo, editTodo } from "@/lib/addTodoForm";
 
-export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
+export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, todoIndex?: number } ) => {
 
-    const { control, setValue, handleSubmit, reset } = useForm<ITodo>({
+    const { control, setValue, handleSubmit, reset, watch } = useForm<ITodo>({
         defaultValues: editValues ? editValues : {
             title: "",
             description: "",
-            category: "",
+            category: null,
             priority: "Média",
             progress: 0,
             completed: false,
             conclusion_date: "",
         }
     });
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const userData: any = session?.user;
-    const userID = userData?.id;
+    const userID = userData ? userData?.id : "";
+    const { username } = useNoSigInSession();
     const { setAlertProps } = useAlertController();
     const { setDialogProps } = useDialogController();
     const { refetch } = useGetTodos();
 
     function submitTodo(data: ITodo){
-        const route = editValues ? "update_todo" : "create_todo";
-        const messages = editValues ? ["atualizada" , "atualizar"] : ["registrada" , "registrar"];
-        (editValues ? api.patch : api.post)(`/user/${route}/${userID}`, data)
-        .then(() => {
-            reset();
-            refetch();
-            setAlertProps({
-                severity: "success",
-                title: "Tudo certo.",
-                message: `Tarefa ${messages[0]} com sucesso!`
-            });
-            setDialogProps(null);
-        })
-        .catch((error) => {
-            console.error(error);
-            setAlertProps({
-                severity: "error",
-                title: "Algo deu errado...",
-                message: `Erro ao ${messages[1]} tarefa. Tente novamente.`
-            });
-        })
+        if(editValues){
+            editTodo({
+                userID,
+                data,
+                localData: status === "authenticated" ? false : true,
+                todoIndex: todoIndex!,
+                refetch,
+                setAlertProps,
+                setDialogProps,
+            })
+            return
+        }
+        addTodo({
+            userID,
+            data: data.completed ? {...data, completedAt: new Date().toJSON()} : data,
+            localData: username ? true : false,
+            refetch,
+            setAlertProps,
+            setDialogProps,
+            reset
+        });
     }
 
     return (
@@ -94,8 +95,8 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
                     defaultValue={editValues ? editValues.category : ""}
                     render={({ field }) =>
                         <Autocomplete
-                        defaultValue={editValues ? editValues.category : null}
-                        isOptionEqualToValue={undefined}
+                        value={watch("category")}
+                        isOptionEqualToValue={(option: any, value: any) => option.id === value.id}
                         disablePortal
                         id="category"
                         options={["Educação", "Trabalho", "Lazer", "Outros"]}
@@ -122,6 +123,8 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
                             <TextField
                             {...params}
                             {...field}
+                            value={field.value}
+                            required
                             label="Categoria" 
                             variant="outlined"
                             />
