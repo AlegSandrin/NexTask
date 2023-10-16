@@ -37,7 +37,7 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
     }
 
     const deleteTask = (todoIndex: number) => deleteTodo({...generalProps, todoIndex});
-    const editTask = () => editTodo(generalProps);
+    const editTask = (todoIndex: number) => editTodo({...generalProps, todoIndex});
     const changeCompletedTask = (todoIndex: number) => changeCompleted({...generalProps, todoIndex});
     
     return <div className="flex flex-col border border-[rgba(227, 227, 227, 0.8)] drop-shadow-md">
@@ -121,7 +121,7 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
                     >
                         <MdModeEditOutline 
                         className="text-2xl -xs:text-xl text-app-palette-100"
-                        onClick={() => editTask()}
+                        onClick={() => editTask(todoIndex)}
                         />
                     </button>
                     <button

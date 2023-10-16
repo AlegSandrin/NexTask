@@ -24,7 +24,6 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
     const { data: session, status } = useSession();
     const userData: any = session?.user;
     const userID = userData ? userData?.id : "";
-    const { username } = useNoSigInSession();
     const { setAlertProps } = useAlertController();
     const { setDialogProps } = useDialogController();
     const { refetch } = useGetTodos();
@@ -45,10 +44,9 @@ export const AddTodoForm = ( { editValues, todoIndex }: { editValues?: ITodo, to
         addTodo({
             userID,
             data: data.completed ? {...data, completedAt: new Date().toJSON()} : data,
-            localData: username ? true : false,
+            localData: status === "authenticated" ? false : true,
             refetch,
             setAlertProps,
-            setDialogProps,
             reset
         });
     }

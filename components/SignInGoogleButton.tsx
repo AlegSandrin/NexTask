@@ -8,7 +8,7 @@ export const SignInGoogleButton = () => {
     return (
         <button 
         onClick={() => signIn("google", undefined, { prompt: "login"})}
-        className="flex items-center shadow-xl rounded-lg gap-2 group hover:scale-105 transition-transform"
+        className="flex items-center shadow-lg rounded-lg gap-2 group hover:scale-105 transition-transform"
         >
             <Image src={GoogleIcon} alt="Google" className="h-12 ml-2 w-auto object-contain"/>
             <span className='font-bold py-4 group-bg-app-palette-500 w-full

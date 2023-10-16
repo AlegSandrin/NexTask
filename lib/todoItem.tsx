@@ -12,15 +12,14 @@ type IDeleteTodo = {
     userID: string;
     todoData: ITodo;
     localData: boolean;
-    todoIndex?: number;
+    todoIndex: number;
     refetch: () => void;
     setAlertProps: IAlertController["setAlertProps"];
     setDialogProps: IDialogController["setDialogProps"];
 }
 
 export function handleDeleteTodo({ userID, todoData, localData, todoIndex, refetch, setAlertProps, setDialogProps } : IDeleteTodo) {
-  
-  if(localData && todoIndex) {
+  if(localData) {
     let todoList = JSON.parse(localStorage.getItem('todos')!);
     todoList.splice(todoIndex, 1);
     localStorage.setItem('todos', JSON.stringify(todoList));
@@ -74,11 +73,12 @@ export function deleteTodo({ userID, todoData, localData, todoIndex, refetch, se
 }
 
 type IEditTodo = {
-  todoData: ITodo, 
+  todoData: ITodo,
+  todoIndex: number; 
   setDialogProps: IDialogController["setDialogProps"]
 }
 
-export function editTodo( { todoData, setDialogProps }: IEditTodo ) {
+export function editTodo( { todoData, todoIndex, setDialogProps }: IEditTodo ) {
     setDialogProps({
       title: "Editar Tarefa",
       styles: { 
@@ -86,7 +86,7 @@ export function editTodo( { todoData, setDialogProps }: IEditTodo ) {
           title: { backgroundColor: "#E3D081", color: "#54494B" }
       },
       content: (
-          <AddTodoForm editValues={todoData}/>
+          <AddTodoForm editValues={todoData} todoIndex={todoIndex}/>
       ),
       actions: (<></>)
     })
@@ -96,7 +96,7 @@ type IChangeCompleted = {
   userID: string;
   todoData: ITodo;
   localData: boolean;
-  todoIndex?: number;
+  todoIndex: number;
   refetch: () => void;
   setAlertProps: IAlertController["setAlertProps"];
 }
@@ -113,7 +113,7 @@ export function changeCompleted({ userID, todoData, localData, todoIndex, refetc
         completedAt: new Date().toJSON()
       }
 
-    if(localData && todoIndex){
+    if(localData){
       let todoList = JSON.parse(localStorage.getItem('todos')!);
       todoList[todoIndex!] = changedTodo;
       localStorage.setItem('todos', JSON.stringify(todoList));
