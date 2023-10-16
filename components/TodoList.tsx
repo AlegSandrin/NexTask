@@ -27,7 +27,7 @@ export const TodoList = () => {
         // OBS: Serve para atualizar os dados da lista a cada "refetch"
         const organizedData = organizeData(status === "authenticated" ? data : localData);
         setDataList(organizedData);
-    },[data, localStorage.getItem('todos')]);
+    },[data, localData]);
 
 
     if(isLoading) return <SkeletonLoading/>
