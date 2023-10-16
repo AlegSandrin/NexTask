@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ITodo } from "@/types/TodoType";
 import { TodoItem } from "./TodoItem";
 import { useGetTodos } from "@/hooks/apiRequest";
@@ -33,12 +34,12 @@ export const TodoList = () => {
     window.addEventListener('storage', () => console.log("teste"));
 
 
-    if(isLoading) return <SkeletonLoading/>
+    if(isLoading) return <div className="max-h-[95vh] overflow-hidden"><SkeletonLoading/></div>
 
-    if( status === "authenticated" && data?.length === 0) 
-        return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+    if( status === "authenticated" && data?.length === 0 ) 
+        return <h1 className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
     else if( status === "unauthenticated" && (localData?.length === 0 || !localData)) 
-        return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+        return <h1 className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
 
     return <>
         <div className="flex flex-col flex-grow h-max justify-center items-center -md:mt-2 md:px-1 md:pb-2">

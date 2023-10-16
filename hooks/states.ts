@@ -61,10 +61,10 @@ export const useNoSigInSession = create<INoSigInSession>((set) => ({
             username,
         }));
     },
-    localData: getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
+    localData: typeof window === "undefined" ? [] : getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
     setLocalData: () => {
         set(() => ({
-            localData: getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
+            localData: typeof window === "undefined" ? [] : getLocalTodoID(JSON.parse(localStorage.getItem("todos")!)),
         }));
     },
 }))

@@ -19,7 +19,7 @@ type IDeleteTodo = {
 }
 
 export function handleDeleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData } : IDeleteTodo) {
-  if(localData) {
+  if(localData && typeof window !== "undefined") {
     let todoList = JSON.parse(localStorage.getItem('todos')!);
     todoList.splice(todoData._id , 1);
 
@@ -115,7 +115,7 @@ export function changeCompleted({ userID, todoData, localData, refetch, setAlert
         completedAt: new Date().toJSON()
       }
 
-    if(localData){
+    if(localData && typeof window !== "undefined") {
       let todoList = JSON.parse(localStorage.getItem('todos')!);
       todoList[todoData._id] = changedTodo;
       localStorage.setItem('todos', JSON.stringify(todoList));

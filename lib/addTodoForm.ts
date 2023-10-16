@@ -15,7 +15,7 @@ export type IHandleAddTodo = {
 
 export function handleAddTodo({ userID, data, localData, setAlertProps, refetch, reset, setLocalData }: IHandleAddTodo) {   
     // Adiciona a tarefa localmente
-    if(localData) {
+    if(localData && typeof window !== "undefined") {
         // Se ainda não houver nenhum item em "todos" no localStorage, criará um novo array vazio
         if(!localStorage.getItem("todos")) localStorage.setItem("todos", JSON.stringify([]));
         let storageData = JSON.parse(localStorage.getItem("todos")!);
@@ -66,7 +66,7 @@ export type IHandleEditTodo = {
 
 export function handleEditTodo({ userID, data, localData, setLocalData, setDialogProps, setAlertProps, refetch }: IHandleEditTodo) {
     // Atualiza a tarefa localmente
-    if(localData) {
+    if(localData && typeof window !== "undefined") {
         // Resgata o array com as tarefas do localStorage
         let storageData: ITodo[] = JSON.parse(localStorage.getItem("todos")!);
         // Substitui os dados da tarefa que deve ser atualizada com os novos dados e adiciona a data atual ao campo "updateAt"

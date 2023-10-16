@@ -18,7 +18,7 @@ export const SignInButton = () => {
 
     function signInLocal(){
         router.push('/home');
-        localStorage.setItem('user', username);
+        if(typeof window !== "undefined") localStorage.setItem('user', username);
         setUsernameSession(username);
     }
 
