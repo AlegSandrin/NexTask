@@ -35,8 +35,10 @@ export const TodoList = () => {
 
     if(isLoading) return <SkeletonLoading/>
 
-    if( status === "authenticated" && data?.length === 0) return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
-    else if(!localData || localData?.length === 0) return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+    if( status === "authenticated" && data?.length === 0) 
+        return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+    else if( status === "unauthenticated" && (localData?.length === 0 || !localData)) 
+        return <h1 className="font-medium text-xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
 
     return <>
         <div className="flex flex-col flex-grow h-max justify-center items-center -md:mt-2 md:px-1 md:pb-2">
