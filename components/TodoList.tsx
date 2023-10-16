@@ -31,9 +31,6 @@ export const TodoList = () => {
         setDataList(organizedData);
     },[data, localData]);
 
-    window.addEventListener('storage', () => console.log("teste"));
-
-
     if(isLoading) return <div className="max-h-[95vh] overflow-hidden"><SkeletonLoading/></div>
 
     if( status === "authenticated" && data?.length === 0 ) 

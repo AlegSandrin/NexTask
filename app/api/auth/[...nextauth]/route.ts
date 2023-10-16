@@ -16,6 +16,9 @@ const authOptions: AuthOptions = {
         // No callback da função de autenticação cria um novo usuário com o email da conta Google (caso ainda não exista)
         async signIn({ user, account }): Promise<any> {
             let { email, name } = user;
+            console.log("signIn callback")
+            console.log(user)
+            console.log(account)
 
             if (account?.provider === "google") {
                 try {

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
 
 export const NextAuthProvider = ({ children }: { children: React.ReactNode }) => {
-    return <SessionProvider>{children}</SessionProvider>;
+    return <SessionProvider refetchOnWindowFocus={false}>{children}</SessionProvider>;
 }
 
 export const ReactQueryProvider = ({ children }: { children: React.ReactNode }) => {
