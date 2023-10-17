@@ -1,46 +1,42 @@
 import { ITodo } from "@/types/TodoType"
-import { Box, Collapse, List, ListItemAvatar, ListItemButton, ListItemText, TextField } from "@mui/material";
+import { Box, CircularProgress, Collapse, List, ListItemAvatar, ListItemButton, ListItemText, TextField } from "@mui/material";
 import { BsCheck2Circle, BsCircleFill, BsExclamationCircleFill, BsCheckSquareFill, BsSquare } from "react-icons/bs";
 import { useState } from "react";
 import { FaTrophy } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import { MdModeEditOutline } from "react-icons/md";
 import { useAlertController, useDialogController, useNoSigInSession } from "@/hooks/states";
-import { useGetTodos } from "@/hooks/apiRequest";
+import { useDeleteTodo, useUpdateTodo } from "@/hooks/apiRequest";
 import { useSession } from "next-auth/react";
 import { dateFormatter } from "@/lib/date";
 import { BorderLinearProgress, changeCompleted, deleteTodo, editTodo } from "@/lib/todoItem";
 
 export type ITodoItem = {
     todo: ITodo;
-    todoIndex: number;
     late?: boolean;
     task?: boolean;
 }
 
-export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
+export const TodoItem = ( { todo, late, task }: ITodoItem ) => {
 
     const [ details, openDetails ] = useState(false);
-    const { refetch } = useGetTodos();
     const setAlertProps = useAlertController().setAlertProps;
     const setDialogProps = useDialogController().setDialogProps;
+    const mutateChangeCompleted = useUpdateTodo({ changeCompleted: true }).mutate;
+    const mutateDelete = useDeleteTodo().mutate;
     const { setLocalData } = useNoSigInSession();
-    const { data: session, status } = useSession();
-    const userData: any = session?.user;
-    const userID = userData ? userData?.id : "";
+    const { status } = useSession();
     const generalProps = {
-        userID,
         todoData: todo,
         localData: status === "authenticated" ? false : true,
-        refetch,
         setAlertProps,
         setDialogProps,
         setLocalData
     }
 
-    const deleteTask = () => deleteTodo({...generalProps});
+    const deleteTask = () => deleteTodo({...generalProps, mutate: mutateDelete});
     const editTask = () => editTodo({...generalProps});
-    const changeCompletedTask = () => changeCompleted({...generalProps});
+    const changeCompletedTask = () => changeCompleted({...generalProps, mutate: mutateChangeCompleted});
     
     return <div className="flex flex-col border border-[rgba(227, 227, 227, 0.8)] drop-shadow-md">
         <ListItemButton
@@ -107,19 +103,34 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
 
                 <span className="flex items-center gap-[6px] sm:gap-2 md:gap-3">
                     {
+                        todo?.isLoading && <CircularProgress size={'1.5rem'} color="inherit" />
+                    }
+                    {
                         todo.completed ?
-                        <BsCheckSquareFill
-                        className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:brightness-[0.8] transition"
-                        onClick={() => changeCompletedTask()} 
-                        />
+                        <button
+                        className={`text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:brightness-[0.8] transition
+                        ${todo?.isLoading ? "cursor-wait saturate-50 brightness-90" : ""}`}
+                        disabled={todo?.isLoading ? true : false}
+                        >
+                            <BsCheckSquareFill
+                            onClick={() => changeCompletedTask()} 
+                            />
+                        </button>
                         :
-                        <BsSquare
-                        className="text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:bg-gray-300 rounded-sm transition"
-                        onClick={() => changeCompletedTask()} 
-                        />
+                        <button
+                        className={`text-4xl -xs:text-3xl mr-1 text-app-palette-300 hover:scale-110 hover:bg-gray-300 rounded-sm transition
+                        ${todo?.isLoading ? "cursor-wait saturate-50 brightness-90" : ""}`}
+                        disabled={todo?.isLoading ? true : false}
+                        >
+                            <BsSquare
+                            onClick={() => changeCompletedTask()} 
+                            />
+                        </button>
                     }
                     <button
-                    className="bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity"
+                    className={`bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity
+                    ${todo?.isLoading ? "cursor-wait saturate-50 brightness-90" : ""}`}
+                    disabled={todo?.isLoading ? true : false}
                     >
                         <MdModeEditOutline 
                         className="text-2xl -xs:text-xl text-app-palette-100"
@@ -127,7 +138,9 @@ export const TodoItem = ( { todo, todoIndex, late, task }: ITodoItem ) => {
                         />
                     </button>
                     <button
-                    className="bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity"
+                    className={`bg-[#e7e7e7] h-min -xs:p-[6px] -sm:p-1 p-2 rounded-full hover:scale-105 hover:opacity-80 transition-opacity
+                    ${todo?.isLoading ? "cursor-wait saturate-50 brightness-90" : ""}`}
+                    disabled={todo?.isLoading ? true : false}
                     >
                         <AiFillDelete
                         className="text-2xl -xs:text-xl text-app-palette-400"

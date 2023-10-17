@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { Loading } from "@/components/Loading";
-import { SignInGoogleButton } from "@/components/SignInGoogleButton"
+import { Loading } from "@/components/Layout/Loading";
+import { SignInGoogleButton } from "@/components/Layout/SignInGoogleButton"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
 import Banner from "../../public/NexTask-banner.png";
 import { AiFillCrown } from "react-icons/ai";
-import { SignInButton } from "@/components/SignInButton";
+import { SignInButton } from "@/components/Layout/SignInButton";
 
 const Login = () => {
 

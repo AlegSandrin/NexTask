@@ -1,24 +1,23 @@
-import { AddTodoForm } from "@/components/AddTodoForm";
-import CustomButton from "@/components/CustomButton";
+import { AddTodoForm } from "@/components/TodoComponents/AddTodoForm";
+import CustomButton from "@/components/Layout/CustomButton";
 import { IAlertController, IDialogController, INoSigInSession } from "@/hooks/states";
-import api from "@/services/api";
 import { ITodo } from "@/types/TodoType";
 import LinearProgress from "@mui/material/LinearProgress";
 import linearProgressClasses from "@mui/material/LinearProgress/linearProgressClasses";
 import styled from "@mui/material/styles/styled";
 import { AiFillDelete } from "react-icons/ai";
+import { UseMutateFunction } from "@tanstack/react-query";
 
 type IDeleteTodo = {
-    userID: string;
     todoData: ITodo;
     localData: boolean;
-    refetch: () => void;
+    mutate: UseMutateFunction<any, unknown, ITodo, any>;
     setAlertProps: IAlertController["setAlertProps"];
     setDialogProps: IDialogController["setDialogProps"];
     setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function handleDeleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData } : IDeleteTodo) {
+export function handleDeleteTodo({ todoData, localData, mutate, setAlertProps, setDialogProps, setLocalData } : IDeleteTodo) {
   if(localData && typeof window !== "undefined") {
     let todoList = JSON.parse(localStorage.getItem('todos')!);
     todoList.splice(todoData._id , 1);
@@ -33,27 +32,10 @@ export function handleDeleteTodo({ userID, todoData, localData, refetch, setAler
     setDialogProps(null);
     return;
   }
-  
-  api.post(`/user/delete_todo/${userID}`, {id: todoData._id})
-  .then(() => {
-    refetch();
-    setAlertProps({
-      severity: "success",
-      title: "Tudo certo.",
-      message: "Tarefa excluída com sucesso!"
-    })
-    setDialogProps(null);
-  })
-  .catch((error) => {
-    setAlertProps({
-      severity: "error",
-      title: "Algo deu errado...",
-      message: "Erro ao excluir a tarefa. Tente novamente."
-    })
-    console.error(error);
-  })
+
+  mutate(todoData);
 }
-export function deleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData }: IDeleteTodo) {
+export function deleteTodo({ todoData, localData, mutate, setAlertProps, setDialogProps, setLocalData }: IDeleteTodo) {
     setDialogProps({
         title: "Excluir Tarefa",
         contentText: "Tem certeza que deseja excluir esta tarefa?",
@@ -64,7 +46,7 @@ export function deleteTodo({ userID, todoData, localData, refetch, setAlertProps
         actions: (
           <CustomButton
           onClick={() => {
-          handleDeleteTodo({ userID, todoData, localData, refetch, setAlertProps, setDialogProps, setLocalData })
+          handleDeleteTodo({ todoData, localData, mutate, setAlertProps, setDialogProps, setLocalData })
           }}
           Text="Excluir"
           className="bg-app-palette-400 text-app-palette-200 font-semibold -sm:text-sm -sm:px-[8px] -sm:py-[6px]"
@@ -95,15 +77,14 @@ export function editTodo( { todoData, setDialogProps }: IEditTodo ) {
 }
 
 type IChangeCompleted = {
-  userID: string;
   todoData: ITodo;
   localData: boolean;
-  refetch: () => void;
+  mutate: UseMutateFunction<any, unknown, ITodo, any>
   setAlertProps: IAlertController["setAlertProps"];
   setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function changeCompleted({ userID, todoData, localData, refetch, setAlertProps, setLocalData }: IChangeCompleted) {
+export function changeCompleted({ todoData, localData, mutate, setAlertProps, setLocalData }: IChangeCompleted) {
     let changedTodo: ITodo & { completedAt?: string } = {
       ...todoData,
       completed: !todoData.completed
@@ -130,28 +111,7 @@ export function changeCompleted({ userID, todoData, localData, refetch, setAlert
       return;
     }
 
-    api.patch(`/user/update_todo/${userID}`, changedTodo)
-    .then(() => {
-      refetch();
-      setAlertProps({
-        severity: "success",
-        title: "Tudo certo.",
-        message: changedTodo.completed 
-          ? "Uhuul! Tarefa concluída!" 
-          : "Conclusão removida com sucesso."
-      })
-    })
-    .catch((error) => {
-      setAlertProps({
-        severity: "error",
-        title: "Algo deu errado...",
-        message: changedTodo.completed 
-          ? "Erro ao concluir a tarefa. Tente novamente." 
-          : "Erro ao remover a conclusão da tarefa. Tente novamente."
-      })
-      console.error(error);
-    })
-
+    mutate(changedTodo);
 }
 
 export const progressColor = (progress: number) => 

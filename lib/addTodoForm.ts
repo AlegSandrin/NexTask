@@ -1,19 +1,18 @@
 import { IAlertController, IDialogController, INoSigInSession } from "@/hooks/states";
-import api from "@/services/api";
 import { ITodo } from "@/types/TodoType";
+import { UseMutateFunction } from "@tanstack/react-query";
 import { UseFormReset } from "react-hook-form";
 
 export type IHandleAddTodo = {
-    userID: string;
     data: ITodo;
-    localData: boolean;
+    mutate: UseMutateFunction<any, unknown, ITodo, any>;
     setAlertProps: IAlertController["setAlertProps"];
-    refetch: () => Promise<any>;
     reset: UseFormReset<ITodo>;
+    localData: boolean;
     setLocalData: INoSigInSession["setLocalData"];
 }
 
-export function handleAddTodo({ userID, data, localData, setAlertProps, refetch, reset, setLocalData }: IHandleAddTodo) {   
+export function handleAddTodo({ data, localData, mutate, setAlertProps, reset, setLocalData }: IHandleAddTodo) {   
     // Adiciona a tarefa localmente
     if(localData && typeof window !== "undefined") {
         // Se ainda não houver nenhum item em "todos" no localStorage, criará um novo array vazio
@@ -32,7 +31,7 @@ export function handleAddTodo({ userID, data, localData, setAlertProps, refetch,
         setAlertProps({
             severity: "success",
             title: "Tudo certo.",
-            message: `Tarefa atualizada com sucesso!`
+            message: `Tarefa adicionada com sucesso!`
         });
         reset();
         setLocalData();
@@ -40,31 +39,14 @@ export function handleAddTodo({ userID, data, localData, setAlertProps, refetch,
     }
 
     // Adiciona a tarefa ao banco de dados do usuário
-    api.post(`/user/create_todo/${userID}`, data)
-    .then(() => {
-        reset();
-        refetch();
-        setAlertProps({
-            severity: "success",
-            title: "Tudo certo.",
-            message: `Tarefa atualizada com sucesso!`
-        });
-    })
-    .catch((error) => {
-        console.error(error);
-        setAlertProps({
-            severity: "error",
-            title: "Algo deu errado...",
-            message: `Erro ao atualizar tarefa. Tente novamente.`
-        });
-    })
+    mutate(data);
 }
 
 export type IHandleEditTodo = {
     setDialogProps: IDialogController["setDialogProps"];
 } & Omit<IHandleAddTodo, "reset">
 
-export function handleEditTodo({ userID, data, localData, setLocalData, setDialogProps, setAlertProps, refetch }: IHandleEditTodo) {
+export function handleEditTodo({ data, mutate, localData, setLocalData, setDialogProps, setAlertProps }: IHandleEditTodo) {
     // Atualiza a tarefa localmente
     if(localData && typeof window !== "undefined") {
         // Resgata o array com as tarefas do localStorage
@@ -84,22 +66,5 @@ export function handleEditTodo({ userID, data, localData, setLocalData, setDialo
     }
     
     // Atualiza a tarefa no banco de dados do usuário
-    api.patch(`/user/update_todo/${userID}`, data)
-    .then(() => {
-        refetch();
-        setAlertProps({
-            severity: "success",
-            title: "Tudo certo.",
-            message: `Tarefa atualizada com sucesso!`
-        });
-        setDialogProps(null);
-    })
-    .catch((error) => {
-        console.error(error);
-        setAlertProps({
-            severity: "error",
-            title: "Algo deu errado...",
-            message: `Erro ao atualizar tarefa. Tente novamente.`
-        });
-    })
+    mutate(data);
 }

@@ -2,13 +2,13 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { Navbar } from '@/components/Navbar';
+import { Navbar } from '@/components/Layout/Navbar';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { NextAuthProvider, ReactQueryProvider } from './Providers';
-import { AlertController } from '@/components/AlertController';
-import { DialogController } from '@/components/DialogController';
+import { AlertController } from '@/components/Modal/AlertController';
+import { DialogController } from '@/components/Modal/DialogController';
 
 const inter = Inter({ subsets: ['latin'] })
 

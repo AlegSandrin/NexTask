@@ -16,15 +16,11 @@ const authOptions: AuthOptions = {
         // No callback da função de autenticação cria um novo usuário com o email da conta Google (caso ainda não exista)
         async signIn({ user, account }): Promise<any> {
             let { email, name } = user;
-            console.log("signIn callback")
-            console.log(user)
-            console.log(account)
 
             if (account?.provider === "google") {
                 try {
                     // Conecta ao MongoDB e faz uma busca verificando se existe um usuário com esse email
                     const userExists = await User.findOne({email}).exec();
-                    console.log(userExists)
                     await connectAuthDB().close();
 
                     if(!userExists) {

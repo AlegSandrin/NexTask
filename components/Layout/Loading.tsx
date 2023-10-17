@@ -1,6 +1,6 @@
-import "../styles/loadingStyle.css";
+import "../../styles/loadingStyle.css";
 import Image from 'next/image';
-import Logo from '../public/NexTask-banner.png';
+import Logo from '../../public/NexTask-banner.png';
 
 export const Loading = () => {
     return <>

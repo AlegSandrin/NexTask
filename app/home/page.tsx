@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { Loading } from "@/components/Loading";
+import { Loading } from "@/components/Layout/Loading";
 import { FaHandSparkles } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AddTodoForm } from "@/components/AddTodoForm";
+import { AddTodoForm } from "@/components/TodoComponents/AddTodoForm";
 import { Collapse } from "@mui/material";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/components/Layout/CustomButton";
 import { MdAddTask } from "react-icons/md";
-import { TodoList } from "@/components/TodoList";
+import { TodoList } from "@/components/TodoComponents/TodoList";
 import { useNoSigInSession } from "@/hooks/states";
 
 export default function Home() {

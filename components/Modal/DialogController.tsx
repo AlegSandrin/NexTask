@@ -2,7 +2,7 @@
 
 import { useDialogController } from "@/hooks/states"
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
-import CustomButton from "./CustomButton";
+import CustomButton from "../Layout/CustomButton";
 import { MdCancel } from "react-icons/md";
 
 export const DialogController = () => {

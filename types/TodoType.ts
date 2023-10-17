@@ -10,4 +10,5 @@ export type ITodo = {
     completedAt?: string;
     createdAt: string;
     updatedAt: string;
+    isLoading?: boolean;
 }

@@ -7,7 +7,7 @@ import { BiSolidFlagAlt } from "react-icons/bi";
 import { RiVipCrown2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import { organizeData } from "@/lib/todoList";
-import { SkeletonLoading } from "./SkeletonLoading";
+import { SkeletonLoading } from "../Layout/SkeletonLoading";
 import { useSession } from "next-auth/react";
 import { useNoSigInSession } from "@/hooks/states";
 
@@ -34,9 +34,9 @@ export const TodoList = () => {
     if(isLoading) return <div className="max-h-[95vh] overflow-hidden"><SkeletonLoading/></div>
 
     if( status === "authenticated" && data?.length === 0 ) 
-        return <h1 className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+        return <h1 data-testid="loading" className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
     else if( status === "unauthenticated" && (localData?.length === 0 || !localData)) 
-        return <h1 className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
+        return <h1 data-testid="loading" className="font-medium text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center self-center my-3">Nenhuma tarefa registrada... 😴</h1>
 
     return <>
         <div className="flex flex-col flex-grow h-max justify-center items-center -md:mt-2 md:px-1 md:pb-2">
@@ -63,7 +63,7 @@ export const TodoList = () => {
                             <label>Afazeres:</label>
                         </span>
                         {
-                            dataList.tasks.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} task/>)
+                            dataList.tasks.map((todo: ITodo, index) => <TodoItem todo={todo} key={todo._id!} task/>)
                         }
                     </div>
                 }
@@ -76,7 +76,7 @@ export const TodoList = () => {
                             <label>Para hoje!:</label>
                         </span>
                         {
-                            dataList.today.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
+                            dataList.today.map((todo: ITodo, index) => <TodoItem todo={todo} key={todo._id!} />)
                         }
                     </div>
                 }
@@ -89,7 +89,7 @@ export const TodoList = () => {
                             <label>Pendentes:</label>
                         </span>
                         {
-                            dataList.pending.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
+                            dataList.pending.map((todo: ITodo, index) => <TodoItem todo={todo} key={todo._id!} />)
                         }
                     </div>
                 }
@@ -102,7 +102,7 @@ export const TodoList = () => {
                             <label>Em atraso:</label>
                         </span>
                         {
-                            dataList.late.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} late/>)
+                            dataList.late.map((todo: ITodo, index) => <TodoItem todo={todo} key={todo._id!} late/>)
                         }
                     </div>
                 }
@@ -116,7 +116,7 @@ export const TodoList = () => {
                             <label>Completas:</label>
                         </span> 
                         {
-                            dataList.completed.map((todo: ITodo, index) => <TodoItem todo={todo} todoIndex={index} key={todo._id!} />)
+                            dataList.completed.map((todo: ITodo, index) => <TodoItem todo={todo} key={todo._id!} />)
                         }
                     </div>
                 }

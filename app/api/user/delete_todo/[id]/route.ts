@@ -7,7 +7,7 @@ export async function POST( body: NextRequest, { params }: { params: { id: strin
     const collectionID = params.id;
     const data = await body.json();
 
-    if(!data.id){
+    if(!data._id){
         return NextResponse.json({
             message: "Error: Task ID is missing."
         }, { status: 400 });
@@ -16,7 +16,7 @@ export async function POST( body: NextRequest, { params }: { params: { id: strin
     const userValidation = await userValidationController(collectionID);
     if(userValidation) return userValidation;
     
-    const res = await Todo(collectionID).deleteOne({ _id: data.id });
+    const res = await Todo(collectionID).deleteOne({ _id: data._id });
     await connectUserDB().close();
 
     if(res.deletedCount === 0){

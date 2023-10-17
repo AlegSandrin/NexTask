@@ -2,7 +2,7 @@
 
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
-import GoogleIcon from '../public/google-icon-edit.png';
+import GoogleIcon from '../../public/google-icon-edit.png';
 
 export const SignInGoogleButton = () => {
     return (

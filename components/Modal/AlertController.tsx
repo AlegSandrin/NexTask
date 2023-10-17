@@ -16,7 +16,7 @@ export const AlertController = () => {
         if(props !== null){
             setTimeout(() => {
                 setAlertProps(null);
-            },2000);
+            },1200);
         }
     },[props]);
 

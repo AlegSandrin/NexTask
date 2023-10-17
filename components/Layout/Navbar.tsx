@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { TbLogout2 } from "react-icons/tb";
-import NexTaskLogo from "../public/NexTask-logo.png";
+import NexTaskLogo from "../../public/NexTask-logo.png";
 import { CircularProgress } from "@mui/material";
 import { useNoSigInSession } from "@/hooks/states";
 import { FaCircleUser } from "react-icons/fa6";
@@ -19,7 +19,7 @@ export const Navbar = () => {
     if(status !== "authenticated" && !username ) return <></>;
 
     return (
-        <nav className="p-2 -md:p-1 max-h-24 flex justify-between items-center shadow-md bg-app-palette-100 text-app-palette-200">
+        <nav data-testid="navbar" className="p-2 -md:p-1 max-h-24 flex justify-between items-center shadow-md bg-app-palette-100 text-app-palette-200">
             <Link href={"/home"}>
                 <Image 
                 src={NexTaskLogo} 

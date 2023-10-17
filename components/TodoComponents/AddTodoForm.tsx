@@ -1,10 +1,10 @@
-import { useGetTodos } from "@/hooks/apiRequest";
+import { useCreateTodo, useUpdateTodo } from "@/hooks/apiRequest";
 import { useAlertController, useDialogController, useNoSigInSession } from "@/hooks/states";
 import { ITodo } from "@/types/TodoType";
-import { Autocomplete, Chip, InputLabel, MenuItem, Select, Slider, Stack, TextField } from "@mui/material";
+import { Autocomplete, Chip, CircularProgress, InputLabel, MenuItem, Select, Slider, Stack, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form"
-import CustomButton from "./CustomButton";
+import CustomButton from "../Layout/CustomButton";
 import { BsFillSendPlusFill, BsSendCheckFill } from "react-icons/bs";
 import { handleAddTodo, handleEditTodo } from "@/lib/addTodoForm";
 
@@ -21,18 +21,15 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
             conclusion_date: "",
         }
     });
-    const { data: session, status } = useSession();
-    const userData: any = session?.user;
-    const userID = userData ? userData?.id : "";
+    const { status } = useSession();
     const { setAlertProps } = useAlertController();
     const { setDialogProps } = useDialogController();
     const { setLocalData } = useNoSigInSession();
-    const { refetch } = useGetTodos();
+    const { mutate, isLoading } = useCreateTodo(reset);
+    const updateTodo = useUpdateTodo({}).mutate;
     const generalProps = {
-        userID,
         localData: status === "authenticated" ? false : true,
         setLocalData,
-        refetch,
         setAlertProps,
         setDialogProps,
         reset
@@ -42,12 +39,14 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
         if(editValues){
             handleEditTodo({
                 ...generalProps,
+                mutate: updateTodo,
                 data
             })
             return
         }
         handleAddTodo({
             ...generalProps,
+            mutate: mutate,
             data: data.completed ? {...data, completedAt: new Date().toJSON()} : data
         });
     }
@@ -212,12 +211,15 @@ export const AddTodoForm = ( { editValues }: { editValues?: ITodo } ) => {
                     />
 
                     <CustomButton
+                    disabled={isLoading}
                     Text={`${editValues ? "Atualizar tarefa" : "Enviar tarefa"}`}
                     type="submit"
-                    className="bg-app-palette-300 text-app-palette-100 font-semibold"
+                    className="bg-app-palette-300 text-app-palette-100 font-semibold gap-2"
                     Icon={editValues ? BsSendCheckFill : BsFillSendPlusFill}
                     IconStyle="text-2xl text-app-palette-100"
-                    />
+                    >
+                        { isLoading && <CircularProgress color="inherit" size={'1rem'} /> }
+                    </CustomButton>
                 </div>
             </form>
         </div>
