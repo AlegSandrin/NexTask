@@ -12,6 +12,7 @@ export type IAlertController = {
     setAlertProps: (props: IAlertController["props"]) => void;
 }
 
+// Controla a renderização e o conteúdo do component de Alert
 export const useAlertController = create<IAlertController>((set) => ({
     props: null,
     setAlertProps(props) {
@@ -38,6 +39,7 @@ export type IDialogController = {
     setDialogProps: (props: IDialogController["props"]) => void;
 }
 
+// Controla a renderização e o conteúdo do component de Dialog
 export const useDialogController = create<IDialogController>((set) => ({
     props: null,
     setDialogProps(props) {
@@ -54,6 +56,7 @@ export type INoSigInSession = {
     setLocalData: () => void;
 }
 
+// Controla os dados locais do usuário (localStorage) e mantém em um estado
 export const useNoSigInSession = create<INoSigInSession>((set) => ({
     username: undefined,
     setUsernameSession: (username) => {

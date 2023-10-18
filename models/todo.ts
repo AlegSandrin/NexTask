@@ -1,5 +1,5 @@
 import { connectUserDB } from "@/lib/mongodb";
-import mongoose, { Schema, models } from "mongoose";
+import { Schema } from "mongoose";
 
 // Schema para coleção de "To do's" de cada usuário
 function Todo (id: string) {
