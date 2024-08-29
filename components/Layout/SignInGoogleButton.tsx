@@ -13,7 +13,7 @@ export const SignInGoogleButton = () => {
             <Image src={GoogleIcon} alt="Google" className="h-12 ml-2 w-auto object-contain"/>
             <span className='font-bold py-4 group-bg-app-palette-500 w-full
             bg-app-palette-500 group-hover:bg-app-palette-400 group-hover:text-app-palette-200 transition-colors'>
-                Entar com conta Google
+                Entrar com conta Google
             </span>
         </button>
     )

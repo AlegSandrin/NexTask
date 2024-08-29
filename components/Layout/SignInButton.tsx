@@ -30,7 +30,7 @@ export const SignInButton = () => {
             <FaUserClock className="text-4xl ml-5 mr-1 text-app-palette-100"/>
             <span className='font-bold py-4 group-bg-app-palette-500 w-full
             text-app-palette-200 bg-app-palette-100 group-hover:bg-app-palette-400 transition-colors'>
-                Entar sem cadastrar
+                Entrar sem cadastrar
             </span>
         </button>
         <Collapse sx={{ marginY: '10px'}} in={openInput}>
